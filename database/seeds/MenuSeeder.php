@@ -84,7 +84,7 @@ class MenuSeeder extends Seeder
         $now = Carbon::now();
 
         $menuOptions = [
-            ['name' => '紫米', 'price' => 5, 'type' => ['BASIC', 'CLUB']],
+            ['name' => '紫米', 'price' => 5, 'type' => ['RICE']],
             ['name' => '蘿蔔', 'price' => 0, 'type' => ['BASIC', 'CLUB']],
             ['name' => '酸菜', 'price' => 0, 'type' => ['BASIC', 'CLUB']],
             ['name' => '油條', 'price' => 0, 'type' => ['BASIC', 'CLUB']],
