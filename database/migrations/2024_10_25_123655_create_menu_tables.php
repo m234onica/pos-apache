@@ -17,6 +17,7 @@ class CreateMenuTables extends Migration
             $table->increments('id');
             $table->string('name')->comment('菜名');
             $table->integer('price')->comment('價格');
+            $table->enum('type', ['BASIC', 'CLUB', 'DRINK'])->comment('類型');
             $table->boolean('status')->default(false)->comment('狀態, true:上架, false:下架');
             $table->timestamps();
         });
