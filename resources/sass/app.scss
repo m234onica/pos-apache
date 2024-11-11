@@ -201,8 +201,6 @@ body {
 
             .modal-header {
                 padding: 15px 0px;
-                border-bottom: 1px solid #e5e5e5;
-
                 /* 按鈕樣式 */
                 .close {
                     color: #666;
@@ -222,6 +220,10 @@ body {
                     /* 深灰色 */
                     font-weight: bold;
                 }
+
+            }
+            .cart-item {
+                margin-top: 12px;
             }
             #cart-modal-body {
                 font-size: 36px;

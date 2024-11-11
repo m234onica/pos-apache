@@ -27,8 +27,7 @@
         <div class="order-item">
             <div>
                 <h4>{{$item->name}}</h4>
-                <p>口味小菜備註：{{ $item->set }}</p>
-                <p>不要：{{ $item->no }}</p>
+                <p>配菜：{{ $item->set }}</p>
             </div>
             <span>${{ $item->total_price }}</span>
         </div>
@@ -38,7 +37,7 @@
             <span class="total-label">總計:</span>
             <span style="color:red">{{ $order->price }}</span>
         </div>
-        <button class="processing-button" onclick="updateOrderStatus({{ $order->id }}, 'UNPAID')">處理中</button>
+        <button class="processing-button" onclick="updateOrderStatus({{ $order->id }}, 'COMPLETED')">處理中</button>
     </div>
 
     @elseif ($order->status == 'UNPAID')
@@ -54,8 +53,7 @@
         <div class="order-item">
             <div>
                 <h4>{{$item->name}}</h4>
-                <p>口味小菜備註：{{ $item->set }}</p>
-                <p>不要：{{ $item->no }}</p>
+                <p>配菜：{{ $item->set }}</p>
 
             </div>
             <span>${{ $item->total_price }}</span>
@@ -66,7 +64,7 @@
             <span class="total-label">總計:</span>
             <span style="color:red">{{ $order->price }}</span>
         </div>
-        <button class="checkout-button" onclick="updateOrderStatus({{ $order->id }}, 'COMPLETED')">結帳</button>
+        <button class="checkout-button" onclick="updateOrderStatus({{ $order->id }}, 'PROCESSING')">結帳</button>
     </div>
 
     @elseif ($order->status == 'COMPLETED')
@@ -88,8 +86,7 @@
             <div class="order-item">
                 <div>
                     <h4>{{$item->name}}</h4>
-                    <p>口味小菜備註：{{ $item->set }}</p>
-                    <p>不要：{{ $item->no }}</p>
+                    <p>配菜：{{ $item->set }}</p>
                 </div>
                 <span>${{ $item->total_price }}</span>
             </div>
@@ -122,8 +119,7 @@
             <div class="order-item">
                 <div>
                     <h4>{{ $item->name }}</h4>
-                    <p>口味小菜備註：{{ $item->set }}</p>
-                    <p>不要：{{ $item->no }}</p>
+                    <p>配菜：{{ $item->set }}</p>
                 </div>
                 <span>${{ $item->total_price }}</span>
             </div>

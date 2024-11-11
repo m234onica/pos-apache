@@ -21,18 +21,28 @@
         $spicyOptions = collect([]);
         $drinkOptions = collect([]);
         $canAddMenuOptions = collect([]);
-        if ($menu->type == 'DRINK') {
+
+        if ($menu->type === 'DRINK') {
+            // 只保留類型為 DRINK 的選項
             $drinkOptions = $menuOptions->filter(function ($option) {
-                return !array_diff($option->type, ['DRINK']);
+                return $option->type === ['DRINK'];
             });
-        }
-
-        if (in_array($menu->type, ['BASIC', 'CLUB'])) {
+        } elseif (in_array($menu->type, ['BASIC', 'CLUB'])) {
+            // 保留非 DRINK 和非 SPICY 的選項
             $canAddMenuOptions = $menuOptions->filter(function ($option) {
-                return array_diff($option->type, ['DRINK']) && array_diff($option->type, ['SPICY']);
+                return !in_array('DRINK', $option->type) && !in_array('SPICY', $option->type);
+            })->map(function ($option) use ($menu) {
+                // 設定價格：BASIC 類型的選項且選項包含 BASIC，或 CLUB 類型的選項價格為 0，否則為 5
+    if (($menu->type === 'BASIC' && in_array('BASIC', $option->type)) || $menu->type === 'CLUB') {
+        $option->price = 0;
+    } else {
+        $option->price = 5;
+    }
+    return $option;
             });
         }
 
+        // 只保留類型為 SPICY 的選項
         $spicyOptions = $menuOptions->filter(function ($option) {
             return in_array('SPICY', $option->type);
         });
@@ -43,7 +53,7 @@
             data-id="{{ $menu->id }}"
             data-name="{{ $menu->name }}"
             data-price="{{ $menu->price }}"
-            data-type="{{ $menu->type }}"
+            data-menu-type="{{ $menu->type }}"
             data-menu-default-options="{{ $menu->options }}"
             data-menu-all-options="{{ $canAddMenuOptions }}"
             data-menu-drink-options="{{ $drinkOptions }}"

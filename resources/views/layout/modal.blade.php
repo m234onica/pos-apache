@@ -50,8 +50,9 @@
                     @csrf
                     <input type="hidden" id="menu-id">
                     <input type="hidden" id="name">
+                    <input type="hidden" id="type">
                     <div id="menuOptions" class="form-group">
-                        <label for="menuOptions">預設菜色：</label>
+                        <label for="menuOptions">配菜：</label>
                         <div class="checkbox-grid" id="options-container">
                             <!-- 選項會動態填充 -->
                         </div>
@@ -112,6 +113,7 @@
 
         // 當 cartModal 顯示時更新購物車內容
         $('#cartModal').on('show.bs.modal', function() {
+            $(this).removeAttr('aria-hidden');
             updateCartModalContent();
         });
 
@@ -123,6 +125,7 @@
                     id: button.getAttribute('data-id'),
                     name: button.getAttribute('data-name'),
                     price: button.getAttribute('data-price'),
+                    type: button.getAttribute('data-menu-type'),
                     status: button.getAttribute('data-status') === '1'
                 };
                 populateEditForm(menuData);
@@ -136,7 +139,7 @@
                         id: this.id.split("-")[1],
                         name: this.getAttribute("data-name"),
                         price: this.getAttribute("data-price"),
-                        type: this.getAttribute("data-type"),
+                        type: this.getAttribute("data-menu-type"),
                         drinkOptions: JSON.parse(this.getAttribute("data-menu-drink-options") || '[]'),
                         options: JSON.parse(this.getAttribute("data-menu-default-options") || '[]'),
                         allOptions: JSON.parse(this.getAttribute("data-menu-all-options") || '[]'),
@@ -160,6 +163,12 @@
             document.getElementById('menu-id').value = id;
             document.getElementById('name').value = name;
             document.getElementById('price').value = price;
+            document.getElementById('type').value = type;
+
+            // 將數據設置到對應的 DOM 元素上，這樣在 addCart 中可以正確讀取
+            document.getElementById("options-container").setAttribute("data-menu-all-options", JSON.stringify(allOptions));
+            document.getElementById("drink-options-container").setAttribute("data-menu-drink-options", JSON.stringify(drinkOptions));
+            document.getElementById("spicy-options-container").setAttribute("data-menu-spicy-options", JSON.stringify(spicyOptions));
 
             // 將 options 轉換為一個 Set，方便查找
             const selectedOptions = new Set(options.map(opt => opt.id));
@@ -275,28 +284,80 @@
         function addCart() {
             const name = document.getElementById('name').value;
             const menuId = document.getElementById('menu-id').value;
-            const price = document.getElementById('price').value;
+            const price = parseFloat(document.getElementById('price').value);
+            const type = document.getElementById('type').value;
 
-            // 獲取所有選中的菜色選項
-            const selectedOptions = Array.from(document.querySelectorAll('#options-container input[type="checkbox"]:checked'))
-                .map(option => option.value);
+            // 將選項陣列轉換為以 id 為鍵的對象
+            function mapOptionsById(optionsArray) {
+                return optionsArray.reduce((acc, option) => {
+                    acc[option.id] = option;
+                    return acc;
+                }, {});
+            }
 
-            // 獲取辣度選項（單選）
-            const selectedSpicyOption = document.querySelector('#spicy-options-container input[type="checkbox"]:checked');
-            const spicyOption = selectedSpicyOption ? selectedSpicyOption.value : null;
+            // 獲取選中的選項，返回包含選項 id, name 和 price 的對象
+            function getSelectedOptions(containerId, optionsMapObject) {
+                return Array.from(document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`))
+                    .map(option => {
+                        const optionId = option.value;
+                        const optionData = optionsMapObject[optionId] || {
+                            name: "未知",
+                            price: 0
+                        };
+                        return {
+                            id: optionId,
+                            name: optionData.name,
+                            price: optionData.price
+                        };
+                    });
+            }
 
-            // 獲取尺寸選項（飲品專用）
-            const selectedDrinkOption = document.querySelector('#drink-options-container input[type="checkbox"]:checked');
-            const drinkOption = selectedDrinkOption ? selectedDrinkOption.value : null;
+            // 解析 JSON 並轉換為對象
+            const optionMapArray = JSON.parse(document.getElementById("options-container").getAttribute("data-menu-all-options") || '[]');
+            const drinkOptionMapArray = Array.isArray(JSON.parse(document.getElementById("drink-options-container").getAttribute("data-menu-drink-options") || '[]')) ?
+                JSON.parse(document.getElementById("drink-options-container").getAttribute("data-menu-drink-options") || '[]') :
+                Object.values(JSON.parse(document.getElementById("drink-options-container").getAttribute("data-menu-drink-options") || '[]'));
+            const spicyOptionMapArray = Array.isArray(JSON.parse(document.getElementById("spicy-options-container").getAttribute("data-menu-spicy-options") || '[]')) ?
+                JSON.parse(document.getElementById("spicy-options-container").getAttribute("data-menu-spicy-options") || '[]') :
+                Object.values(JSON.parse(document.getElementById("spicy-options-container").getAttribute("data-menu-spicy-options") || '[]'));
+
+            // 生成以 id 為鍵的對象
+            const optionMapObject = mapOptionsById(optionMapArray);
+            const drinkOptionMapObject = mapOptionsById(drinkOptionMapArray);
+            const spicyOptionMapObject = mapOptionsById(spicyOptionMapArray);
+
+            let selectedOptions = [];
+            let selectedSpicyOption = null;
+            let selectedDrinkOption = null;
+
+            if (type !== 'DRINK') {
+                // 獲取配菜選項和辣度選項
+                selectedOptions = getSelectedOptions('options-container', optionMapObject);
+                const selectedSpicyOptionElement = document.querySelector('#spicy-options-container input[type="checkbox"]:checked');
+                selectedSpicyOption = selectedSpicyOptionElement ? {
+                    id: selectedSpicyOptionElement.value,
+                    name: spicyOptionMapObject[selectedSpicyOptionElement.value]?.name || "未知",
+                    price: spicyOptionMapObject[selectedSpicyOptionElement.value]?.price || 0
+                } : null;
+            } else {
+                // 獲取飲品尺寸選項
+                const selectedDrinkOptionElement = document.querySelector('#drink-options-container input[type="checkbox"]:checked');
+                selectedDrinkOption = selectedDrinkOptionElement ? {
+                    id: selectedDrinkOptionElement.value,
+                    name: drinkOptionMapObject[selectedDrinkOptionElement.value]?.name || "未知",
+                    price: drinkOptionMapObject[selectedDrinkOptionElement.value]?.price || 0
+                } : null;
+            }
 
             // 構建要加入購物車的項目
             const cartItem = {
-                menuId: menuId,
-                name: name,
-                price: parseFloat(price),
+                menuId,
+                name,
+                price,
+                type,
                 options: selectedOptions,
-                spicyOptions: spicyOption,
-                drinkOptions: drinkOption
+                spicyOptions: selectedSpicyOption,
+                drinkOptions: selectedDrinkOption
             };
 
             // 將項目添加到購物車陣列中
@@ -304,8 +365,6 @@
 
             // 顯示通知或更新購物車視圖
             alert('已加入購物車！');
-            $('#menuOptionsModal').modal('hide');
-            $('.modal-backdrop').remove(); // 強制移除遮罩
             console.log(carts); // 供調試用，查看購物車的內容
         }
 
@@ -327,8 +386,15 @@
             carts.forEach(cartItem => {
                 const itemDiv = document.createElement('div');
                 itemDiv.classList.add('cart-item');
-                itemDiv.innerHTML = `<span style="margin-right: 24px;">${cartItem.name}</span>
-                    <span style="margin-right: 24px;">$${cartItem.price} x ${cartItem.quantity || 1}</span>`;
+                itemDiv.style = "margin-bottom: 36px;";
+
+                // 計算主商品及其選項的總價格
+                let totalPrice = cartItem.price + (cartItem.options || []).reduce((acc, option) => acc + option.price, 0);
+                totalPrice += (cartItem.spicyOptions?.price || 0) + (cartItem.drinkOptions?.price || 0);
+
+                // 顯示主商品的名稱和總價格
+                itemDiv.innerHTML = `<span style="margin-right: 24px;font-weight: 700;">${cartItem.name}</span>
+                    <span style="margin-right: 24px;font-weight: 700;">$${totalPrice} x ${cartItem.quantity || 1}</span>`;
 
                 // 刪除按鈕
                 const deleteButton = document.createElement('span');
@@ -336,11 +402,47 @@
                 deleteButton.style = "color:red; font-size:36px; cursor:pointer;";
                 deleteButton.innerText = 'delete';
                 deleteButton.addEventListener('click', () => removeCartItem(cartItem.menuId));
-
                 itemDiv.appendChild(deleteButton);
+
                 modalBody.appendChild(itemDiv);
 
-                total += cartItem.price * (cartItem.quantity || 1);
+                // 顯示選項內容和價格
+                const optionsList = document.createElement('div');
+                optionsList.classList.add('options-list');
+                optionsList.style = "margin-right: 24px; font-size: 30px;";
+
+                // 顯示各個選項的名稱和價格，並在不是最後一個選項時加上 "/"
+                (cartItem.options || []).forEach((option, index) => {
+                    const optionItem = document.createElement('span');
+                    optionItem.innerText = `${option.name} (+$${option.price})`;
+                    optionsList.appendChild(optionItem);
+
+                    if (index < cartItem.options.length - 1) {
+                        const separator = document.createElement('span');
+                        separator.innerText = ' / ';
+                        optionsList.appendChild(separator);
+                    }
+                });
+                itemDiv.appendChild(optionsList);
+
+                // 顯示辣度選項
+                if (cartItem.spicyOptions) {
+                    const spicyOptionItem = document.createElement('p');
+                    spicyOptionItem.style = "margin-right: 24px; font-size: 30px;";
+                    spicyOptionItem.innerText = `${cartItem.spicyOptions.name} (+$${cartItem.spicyOptions.price})`;
+                    itemDiv.appendChild(spicyOptionItem);
+                }
+
+                // 顯示尺寸選項
+                if (cartItem.drinkOptions) {
+                    const drinkOptionItem = document.createElement('p');
+                    drinkOptionItem.style = "margin-right: 24px; font-size: 30px;";
+                    drinkOptionItem.innerText = `${cartItem.drinkOptions.name} (+$${cartItem.drinkOptions.price})`;
+                    itemDiv.appendChild(drinkOptionItem);
+                }
+
+                // 計算總金額
+                total += totalPrice * (cartItem.quantity || 1);
             });
 
             // 更新總金額顯示
