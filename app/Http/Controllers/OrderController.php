@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Menu;
+use App\Models\MenuOption;
 use App\Models\Order;
 use Illuminate\Http\Request;
 
@@ -42,9 +43,13 @@ class OrderController extends Controller
 
     public function create()
     {
-
-        $menus = Menu::where('status', true)->orderBy('id', 'asc')->get();
-        return view('order.create', compact('menus'));
+        $menus = Menu::where('status', true)->with('options')->orderBy('id', 'asc')->get();
+        $menuOptions = MenuOption::where('status', true)->get();
+        $menuOptions->map(function ($menuOption) {
+            $menuOption->type = json_decode($menuOption->type);
+            return $menuOption;
+        });
+        return view('order.create', compact('menus', 'menuOptions'));
     }
 
     public function store(Request $request, $id = null)
