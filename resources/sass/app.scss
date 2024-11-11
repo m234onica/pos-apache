@@ -1,0 +1,505 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    font-size: 36px;
+}
+
+.container-fluid {
+    width: 100%;
+    margin: 0 auto;
+    background-color: #5b8392;
+    padding: 10px;
+    color: #666;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.nev-tab {
+    display: flex;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    padding: 0 10px;
+    button {
+        flex: 1;
+        padding: 10px;
+        background-color: #5b8392;
+        color: #f0f0f0;
+        border: none;
+        font-size: 36px;
+        border-radius: 0px;
+        cursor: pointer;
+        &.active,
+        &:hover {
+            background-color: #f0f0f0;
+            border-radius: 8px 8px 0px 0px;
+            color: #505050;
+        }
+    }
+}
+.tab {
+    background-color: #f0f0f0;
+    padding: 0 0 10px 0;
+    .add-btn {
+        width: 100%;
+        height: 200px;
+        margin: 60px 0px 10px 0px;
+        padding: 10px;
+        background-color: #49c6f7;
+        color: #f0f0f0;
+        border: none;
+        font-size: 36px;
+        border-radius: 8px;
+        cursor: pointer;
+
+        &:hover {
+            background-color: #fdfdfd;
+            border: 1.5px solid #49c6f7;
+            color: #49c6f7;
+        }
+    }
+
+    .menu-list {
+        margin: 15px;
+        /* 返回按鈕樣式 */
+        .back-button {
+            background-color: #ddd;
+            width: 100%;
+            height: 80px;
+            margin: 60px 0px 10px 0px;
+            padding: 10px;
+            color: #333;
+            border: none;
+            font-size: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            &:hover,
+            &:active {
+                background-color: #fdfdfd;
+                border: 1.5px solid #ddd;
+                color: #333;
+            }
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+
+            .empty p {
+                font-size: 36px;
+                margin: 20px;
+            }
+
+            .menu-item {
+                background-color: #fff;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 20px;
+                justify-content: space-between;
+                &:active {
+                    background-color: #f0f0f0;
+                }
+            }
+
+            .item-details {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                flex-grow: 1;
+                text-align: center;
+
+                h1 {
+                    color: #5e84c7;
+                    margin-bottom: 10px;
+                    font-size: 48px;
+                }
+                span,
+                p {
+                    font-size: 36px;
+                    color: #333;
+                    float: right;
+                    margin-bottom: 10px;
+                }
+            }
+
+            .status {
+                display: flex;
+                align-items: center;
+            }
+
+            .status .switch {
+                position: relative;
+                display: inline-block;
+                width: 40px;
+                height: 20px;
+                margin-right: 10px;
+            }
+
+            .status .switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+            .status .slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                border-radius: 20px;
+                transition: 0.4s;
+            }
+
+            .status .slider:before {
+                position: absolute;
+                content: "";
+                height: 14px;
+                width: 14px;
+                left: 3px;
+                bottom: 3px;
+                background-color: white;
+                border-radius: 50%;
+                transition: 0.4s;
+            }
+
+            .status input:checked + .slider {
+                background-color: #5e84c7;
+            }
+
+            .status input:checked + .slider:before {
+                transform: translateX(20px);
+            }
+
+            .status span {
+                font-size: 24px;
+                color: #333;
+            }
+        }
+    }
+    .modal-dialog {
+        -webkit-transform: translate(0, 0);
+        -ms-transform: translate(0, 0);
+        -o-transform: translate(0, 0);
+        transform: translate(0, 0);
+        margin-top: 200px;
+        position: relative;
+        width: 90%;
+        margin: 200px 5%;
+
+        /* Modal 背景調整 */
+        .modal-content {
+            background-color: #f9f9f9;
+            /* 淺灰色背景 */
+            border-radius: 8px;
+            /* 圓角 */
+            padding: 20px;
+            /* 增加內邊距 */
+
+            .modal-header {
+                padding: 15px 0px;
+                border-bottom: 1px solid #e5e5e5;
+
+                /* 按鈕樣式 */
+                .close {
+                    color: #666;
+                    font-size: 40px;
+                    opacity: 1;
+                    &:hover {
+                        color: #333;
+                        opacity: 0.8;
+                    }
+                }
+
+                /* 標題樣式 */
+                .modal-title {
+                    font-size: 36px;
+                    /* 標題字體大小 */
+                    color: #333;
+                    /* 深灰色 */
+                    font-weight: bold;
+                }
+            }
+            #cart-modal-body {
+                font-size: 36px;
+            }
+        }
+        /* 表單欄位樣式 */
+        .form-group {
+            margin-bottom: 20px;
+            label {
+                font-size: 36px;
+                font-weight: 400;
+                color: #333;
+            }
+
+            input[type="text"] {
+                width: 100%;
+                padding: 8px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                font-size: 36px;
+            }
+        }
+
+        /* 開關樣式 */
+        .switch {
+            position: relative;
+            display: inline-block;
+            height: 40px;
+            width: 70px;
+
+            input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 34px;
+
+            &:before {
+                position: absolute;
+                content: "";
+                height: 34px;
+                width: 34px;
+                left: 8px;
+                bottom: 3px;
+                background-color: white;
+                transition: 0.4s;
+                border-radius: 50%;
+            }
+        }
+
+        input:checked + .slider {
+            background-color: #49c6f7;
+            &:before {
+                transform: translateX(24px);
+            }
+        }
+        /* 儲存按鈕樣式 */
+        .save-button,
+        .submit-button {
+            background-color: #49c6f7;
+            /* 綠色背景 */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 36px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+
+            &:hover {
+                background-color: #fdfdfd;
+                border: 1.5px solid #49c6f7;
+                color: #49c6f7;
+                /* 深綠色 */
+            }
+        }
+    }
+    .order-list {
+        margin: 10px 15px;
+        .order-card {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            .order-header {
+                display: flex;
+                justify-content: space-between;
+                font-size: 36px;
+                color: #666;
+                margin-bottom: 10px;
+            }
+            .order-item {
+                display: flex;
+                align-items: center;
+                margin-bottom: 10px;
+                input[type="checkbox"] {
+                    margin-right: 10px;
+                }
+                h4 {
+                    font-size: 36px;
+                    margin-bottom: 5px;
+                }
+                p {
+                    font-size: 36px;
+                    color: #888;
+                }
+                span {
+                    margin-left: auto;
+                    font-size: 36px;
+                    color: #333;
+                }
+            }
+            .total {
+                width: 100%;
+                display: flex;
+                font-size: 48px;
+                font-weight: bold;
+                span {
+                    width: 50%;
+                    padding: 0px 2px;
+                }
+                .total-label {
+                    width: 50%;
+                    text-align: right;
+                }
+            }
+        }
+        .checkout {
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            .checkout-button {
+                background-color: #009688;
+                color: #fff;
+                cursor: pointer;
+                text-align: center;
+                &:hover {
+                    background-color: #fdfdfd;
+                    border: 1.5px solid #009688;
+                    color: #009688;
+                }
+            }
+        }
+    }
+}
+
+#cartButton {
+    margin: 20px 0px;
+}
+
+h2 {
+    color: #aaa;
+    font-weight: normal;
+    margin-bottom: 20px;
+    font-size: 36px;
+}
+
+.accept-button,
+.processing-button,
+.checkout-button {
+    width: 100%;
+    height: 80px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 36px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.processing-button {
+    background-color: #f57c00;
+
+    &:hover {
+        background-color: #fdfdfd;
+        border: 1.5px solid #f57c00;
+        color: #f57c00;
+    }
+}
+
+.finished button,
+.cancel button {
+    font-size: 36px;
+}
+
+.finished,
+.cancel {
+    display: block; /* 讓整個區域都是塊級元素 */
+    padding: 15px; /* 添加內邊距 */
+    border: 1px solid #ddd; /* 添加邊框 */
+    border-radius: 8px; /* 圓角 */
+    background-color: #f9f9f9; /* 背景顏色 */
+    margin-bottom: 15px; /* 下方間距 */
+    color: inherit; /* 繼承文字顏色 */
+    text-decoration: none; /* 去掉下劃線 */
+    transition: background-color 0.3s; /* 背景色變化的過渡效果 */
+    &:hover {
+        text-decoration: none; /* 去掉下劃線 */
+        background-color: #f0f0f0; /* 滑鼠懸停時改變背景色 */
+    }
+    .view {
+        font-size: 36px;
+    }
+    span {
+        color: #aaa;
+    }
+    .icon {
+        vertical-align: text-bottom;
+        margin-bottom: 2px;
+    }
+
+    button {
+        color: #5b8392;
+    }
+}
+
+.order-header {
+    display: flex; /* 使用彈性盒子 */
+    justify-content: space-between; /* 項目之間的空隙 */
+    align-items: center; /* 垂直置中 */
+}
+
+.material-symbols-outlined.icon {
+    margin-right: 10px; /* 右側間距 */
+    vertical-align: text-bottom;
+    margin-bottom: 2px;
+    font-size: 24px;
+}
+
+/* 收合區域的樣式 */
+.collapse {
+    padding: 10px; /* 上下內邊距 */
+    background-color: #fff; /* 背景顏色 */
+    border-top: 1px solid #ddd; /* 上方邊框 */
+    border-radius: 0 0 8px 8px; /* 圓角 */
+    .order-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        h4 {
+            font-size: 36px;
+            margin-bottom: 5px;
+        }
+        p {
+            font-size: 36px;
+            color: #888;
+        }
+        span {
+            margin-left: auto;
+            font-size: 36px;
+            color: #333;
+        }
+    }
+}
+
+.total-price-and-submit {
+    display: flex;
+    justify-content: space-between;
+    font-size: 36px;
+    color: #666;
+    padding: 15px;
+}
