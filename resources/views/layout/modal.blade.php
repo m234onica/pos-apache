@@ -69,6 +69,15 @@
                             <!-- 選項會動態填充 -->
                         </div>
                     </div>
+                    <!-- 數量：數字選擇器 -->
+                    <div id="quantity" class=" form-group">
+                        <label for="quantity">數量：</label>
+                        <div class="quantity-container">
+                            <button type="button" class="quantity-btn" onclick="decrement()">−</button>
+                            <input type="number" id="quantityInput" name="quantity" value="1" min="1" readonly>
+                            <button type="button" class="quantity-btn" onclick="increment()">+</button>
+                        </div>
+                    </div>
                     <div class="form-group" style="text-align: right;">
                         <button type="button" class="save-button" onclick="addCart()">加入購物車</button>
                     </div>
@@ -91,7 +100,7 @@
             <hr style="margin:0px">
             <div class="total-price-and-submit">
                 <div class="form-group" style="font-size:36px;">
-                    <span>總共：<span id="totalAmount" style="color: green;">$0</span></span>
+                    <span>總共：<span id="totalAmount" style="color: green;font-weight: 600;">$0</span></span>
                 </div>
 
                 <div class="form-group">
@@ -140,6 +149,7 @@
                         name: this.getAttribute("data-name"),
                         price: this.getAttribute("data-price"),
                         type: this.getAttribute("data-menu-type"),
+                        quantity: this.getAttribute("data-quantity"),
                         drinkOptions: JSON.parse(this.getAttribute("data-menu-drink-options") || '[]'),
                         options: JSON.parse(this.getAttribute("data-menu-default-options") || '[]'),
                         allOptions: JSON.parse(this.getAttribute("data-menu-all-options") || '[]'),
@@ -155,6 +165,7 @@
             name,
             price,
             type,
+            quantity,
             options,
             allOptions,
             spicyOptions,
@@ -164,6 +175,7 @@
             document.getElementById('name').value = name;
             document.getElementById('price').value = price;
             document.getElementById('type').value = type;
+            document.getElementById('quantityInput').value = quantity;
 
             // 將數據設置到對應的 DOM 元素上，這樣在 addCart 中可以正確讀取
             document.getElementById("options-container").setAttribute("data-menu-all-options", JSON.stringify(allOptions));
@@ -246,6 +258,18 @@
             });
         }
 
+        function increment() {
+            const input = document.getElementById('quantityInput');
+            input.value = parseInt(input.value) + 1;
+        }
+
+        function decrement() {
+            const input = document.getElementById('quantityInput');
+            if (parseInt(input.value) > 1) {
+                input.value = parseInt(input.value) - 1;
+            }
+        }
+
         // 表單提交（創建或更新菜單）
         function submitMenuForm() {
             const id = document.getElementById('menu-id').value;
@@ -286,6 +310,7 @@
             const menuId = document.getElementById('menu-id').value;
             const price = parseFloat(document.getElementById('price').value);
             const type = document.getElementById('type').value;
+            const quantity = parseInt(document.getElementById('quantityInput').value);
 
             // 將選項陣列轉換為以 id 為鍵的對象
             function mapOptionsById(optionsArray) {
@@ -306,6 +331,7 @@
                         };
                         return {
                             id: optionId,
+                            type: optionData.type,
                             name: optionData.name,
                             price: optionData.price
                         };
@@ -355,6 +381,7 @@
                 name,
                 price,
                 type,
+                quantity,
                 options: selectedOptions,
                 spicyOptions: selectedSpicyOption,
                 drinkOptions: selectedDrinkOption
@@ -384,13 +411,16 @@
 
             // 添加每個購物車項目
             carts.forEach(cartItem => {
-                const itemDiv = document.createElement('div');
+                const itemDiv = document.createElement('li');
                 itemDiv.classList.add('cart-item');
                 itemDiv.style = "margin-bottom: 36px;";
 
                 // 計算主商品及其選項的總價格
                 let totalPrice = cartItem.price + (cartItem.options || []).reduce((acc, option) => acc + option.price, 0);
                 totalPrice += (cartItem.spicyOptions?.price || 0) + (cartItem.drinkOptions?.price || 0);
+
+                // 將計算後的價格存儲到 cartItem 的 computedPrice 屬性（不覆蓋原始 price）
+                cartItem.totalPrice = totalPrice;
 
                 // 顯示主商品的名稱和總價格
                 itemDiv.innerHTML = `<span style="margin-right: 24px;font-weight: 700;">${cartItem.name}</span>
@@ -409,26 +439,20 @@
                 // 顯示選項內容和價格
                 const optionsList = document.createElement('div');
                 optionsList.classList.add('options-list');
-                optionsList.style = "margin-right: 24px; font-size: 30px;";
 
                 // 顯示各個選項的名稱和價格，並在不是最後一個選項時加上 "/"
                 (cartItem.options || []).forEach((option, index) => {
                     const optionItem = document.createElement('span');
-                    optionItem.innerText = `${option.name} (+$${option.price})`;
+                    optionItem.style = "margin-right: 12px;";
+                    optionItem.innerText = `${option.name} (+$${option.price}) `;
                     optionsList.appendChild(optionItem);
-
-                    if (index < cartItem.options.length - 1) {
-                        const separator = document.createElement('span');
-                        separator.innerText = ' / ';
-                        optionsList.appendChild(separator);
-                    }
                 });
                 itemDiv.appendChild(optionsList);
 
                 // 顯示辣度選項
                 if (cartItem.spicyOptions) {
                     const spicyOptionItem = document.createElement('p');
-                    spicyOptionItem.style = "margin-right: 24px; font-size: 30px;";
+                    spicyOptionItem.classList.add('options-list');
                     spicyOptionItem.innerText = `${cartItem.spicyOptions.name} (+$${cartItem.spicyOptions.price})`;
                     itemDiv.appendChild(spicyOptionItem);
                 }
@@ -436,7 +460,7 @@
                 // 顯示尺寸選項
                 if (cartItem.drinkOptions) {
                     const drinkOptionItem = document.createElement('p');
-                    drinkOptionItem.style = "margin-right: 24px; font-size: 30px;";
+                    drinkOptionItem.classList.add('options-list');
                     drinkOptionItem.innerText = `${cartItem.drinkOptions.name} (+$${cartItem.drinkOptions.price})`;
                     itemDiv.appendChild(drinkOptionItem);
                 }
@@ -447,6 +471,8 @@
 
             // 更新總金額顯示
             totalAmountElement.textContent = `$${total.toFixed(0)}`;
+            console.log(carts);
+
         }
 
         // 刪除購物車項目
@@ -485,6 +511,8 @@
 
         // 外部調用的函數，掛載到 window 物件上
         window.submitMenuForm = submitMenuForm;
+        window.increment = increment;
+        window.decrement = decrement;
         window.createOrder = createOrder;
         window.addCart = addCart;
 

@@ -220,7 +220,6 @@ body {
                     /* 深灰色 */
                     font-weight: bold;
                 }
-
             }
             .cart-item {
                 margin-top: 12px;
@@ -260,9 +259,11 @@ body {
             }
 
             .checkbox-item input[type="checkbox"] {
-                margin-right: 8px;
+                margin: 0px 8px 4px 8px;
                 width: 32px;
                 height: 32px;
+                transform: scale(1.5); /* 根據需要調整大小 */
+                -webkit-transform: scale(1.5); /* Safari 特殊處理 */
             }
         }
 
@@ -518,4 +519,57 @@ h2 {
     font-size: 36px;
     color: #666;
     padding: 15px;
+}
+
+.options-list {
+    margin: 0 24px 4px 32px;
+    font-size: 30px;
+    display: block;
+    line-height: 1.5;
+}
+
+.quantity-container {
+    display: flex;
+    align-items: center;
+    gap: 4px; /* 控制按鈕和輸入框之間的間距 */
+}
+
+.quantity-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 32px;
+    font-weight: bold;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.quantity-btn:hover {
+    background-color: #e0e0e0;
+}
+
+/* 隱藏數字輸入框的箭頭 */
+input[type="number"] {
+    -moz-appearance: textfield; /* For Firefox */
+    -webkit-appearance: none; /* For Chrome and Safari */
+    appearance: none;
+    width: 120px;
+    height: 48px;
+    text-align: center;
+    font-size: 32px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+}
+
+/* 針對 Chrome/Safari 的內部箭頭 */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }

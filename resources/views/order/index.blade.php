@@ -26,8 +26,8 @@
         @foreach ($order->items as $item)
         <div class="order-item">
             <div>
-                <h4>{{$item->name}}</h4>
-                <p>配菜：{{ $item->set }}</p>
+                <h4>{{$item->name}} x {{ $item->quantity}}</h4>
+                <p>{{ $item->set }}</p>
             </div>
             <span>${{ $item->total_price }}</span>
         </div>
@@ -52,8 +52,8 @@
         @foreach($order->items as $item)
         <div class="order-item">
             <div>
-                <h4>{{$item->name}}</h4>
-                <p>配菜：{{ $item->set }}</p>
+                <h4>{{$item->name}} x {{ $item->quantity}}</h4>
+                <p>{{ $item->set }}</p>
 
             </div>
             <span>${{ $item->total_price }}</span>
@@ -85,8 +85,8 @@
             @foreach($order->items as $item)
             <div class="order-item">
                 <div>
-                    <h4>{{$item->name}}</h4>
-                    <p>配菜：{{ $item->set }}</p>
+                    <h4>{{$item->name}} x {{ $item->quantity}}</h4>
+                    <p>{{ $item->set }}</p>
                 </div>
                 <span>${{ $item->total_price }}</span>
             </div>
@@ -119,7 +119,7 @@
             <div class="order-item">
                 <div>
                     <h4>{{ $item->name }}</h4>
-                    <p>配菜：{{ $item->set }}</p>
+                    <p>{{ $item->set }}</p>
                 </div>
                 <span>${{ $item->total_price }}</span>
             </div>
