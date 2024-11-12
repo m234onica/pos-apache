@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 // 根路徑重定向到 menus 頁面
 Route::get('/', function () {
-    return redirect()->route('menu.index');
+    return redirect()->route('order.index');
 });
 
 Route::get('/menus', ['as' => 'menu.index', 'uses' => '\App\Http\Controllers\MenuController@index']);
@@ -24,6 +24,6 @@ Route::get('/menu/{id}', ['as' => 'menu.show', 'uses' => '\App\Http\Controllers\
 Route::post('/menu/{id}', ['as' => 'menu.show', 'uses' => '\App\Http\Controllers\MenuController@store']);
 
 Route::get('/orders', ['as' => 'order.index', 'uses' => '\App\Http\Controllers\OrderController@index']);
-Route::get('/order/create', ['as' => 'order.index', 'uses' => '\App\Http\Controllers\OrderController@create']);
+Route::get('/order/create', ['as' => 'order.create', 'uses' => '\App\Http\Controllers\OrderController@create']);
 Route::post('/order', ['as' => 'order.show', 'uses' => '\App\Http\Controllers\OrderController@store']);
 Route::post('/order/{id}', ['as' => 'order.show', 'uses' => '\App\Http\Controllers\OrderController@store']);
