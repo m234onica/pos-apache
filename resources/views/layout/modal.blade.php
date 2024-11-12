@@ -51,6 +51,7 @@
                     <input type="hidden" id="menu-id">
                     <input type="hidden" id="name">
                     <input type="hidden" id="type">
+                    <input type="hidden" id="price">
                     <div id="menuOptions" class="form-group">
                         <label for="menuOptions">配菜：</label>
                         <div class="checkbox-grid" id="options-container">
@@ -79,6 +80,7 @@
                         </div>
                     </div>
                     <div class="form-group" style="text-align: right;">
+                        <span id="totalPrice" style="font-weight: bold;color:green;margin-right:24px;font-size:40px;">$0</span>
                         <button type="button" class="save-button" onclick="addCart()">加入購物車</button>
                     </div>
                 </form>
@@ -156,6 +158,7 @@
                         spicyOptions: JSON.parse(this.getAttribute("data-menu-spicy-options") || '[]')
                     };
                     populateOrderForm(menuData);
+                    updateTotalPrice();
                 });
             });
         }
@@ -228,6 +231,7 @@
                 checkbox.id = `option-${option.id}`;
                 checkbox.name = "options[]";
                 checkbox.value = option.id;
+                checkbox.setAttribute("data-price", option.price); // 將價格設置到數據屬性
 
                 // 如果 option.id 存在於 selectedOptions 中，設置為已選中
                 if (selectedOptions.has(option.id)) {
@@ -245,12 +249,17 @@
                                 }
                             });
                         }
+                        // 更新總價，移到這裡確保每次都會更新
+                        updateTotalPrice();
                     });
+                } else {
+                    // 多選時的更新
+                    checkbox.addEventListener("change", () => updateTotalPrice());
                 }
 
                 const label = document.createElement("label");
                 label.htmlFor = `option-${option.id}`;
-                label.innerText = option.name;
+                label.innerText = option.name + ` (+$${option.price})`;
 
                 checkboxItem.appendChild(checkbox);
                 checkboxItem.appendChild(label);
@@ -258,16 +267,43 @@
             });
         }
 
-        function increment() {
-            const input = document.getElementById('quantityInput');
-            input.value = parseInt(input.value) + 1;
+        // 計算並更新總價
+        function updateTotalPrice() {
+            const itemPrice = parseFloat(document.getElementById('price').value) || 0;
+            const quantity = parseInt(document.getElementById('quantityInput').value) || 1;
+            let optionsNodeList = [];
+
+            // 判斷 #options-container 是否顯示，否則使用 #drink-options-container
+            if (menuOptionsModal.querySelector('#options-container').offsetParent !== null) {
+                optionsNodeList = menuOptionsModal.querySelectorAll('#options-container input[type="checkbox"]:checked');
+            } else if (menuOptionsModal.querySelector('#drink-options-container').offsetParent !== null) {
+                optionsNodeList = menuOptionsModal.querySelectorAll('#drink-options-container input[type="checkbox"]:checked');
+            }
+
+            // 確保 optionsNodeList 為陣列，避免單一元素時無法進行 reduce
+            const options = Array.from(optionsNodeList);
+
+            const optionsTotal = options.reduce((total, option) => {
+                const optionPrice = parseFloat(option.getAttribute('data-price')) || 0;
+                return total + optionPrice;
+            }, 0);
+
+            const total = (itemPrice + optionsTotal) * quantity;
+            document.getElementById('totalPrice').innerText = `$${total.toFixed(0)}`;
         }
 
-        function decrement() {
+        function increment(container) {
+            const input = document.getElementById('quantityInput');
+            input.value = parseInt(input.value) + 1;
+            updateTotalPrice();
+        }
+
+        function decrement(container) {
             const input = document.getElementById('quantityInput');
             if (parseInt(input.value) > 1) {
                 input.value = parseInt(input.value) - 1;
             }
+            updateTotalPrice();
         }
 
         // 表單提交（創建或更新菜單）
@@ -471,7 +507,6 @@
 
             // 更新總金額顯示
             totalAmountElement.textContent = `$${total.toFixed(0)}`;
-            console.log(carts);
 
         }
 
