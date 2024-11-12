@@ -38,7 +38,11 @@
                     $option->price = ($option->type === 'BASIC') ? 0 : 5;
                 } elseif ($menu->type === 'CLUB') {
                     // 如果 $menu->type 是 'CLUB'，無論 option 的 type 是 'BASIC' 或 'CLUB'，price = 0
-                    $option->price = 0;
+                    if ($option->type === 'RICE') {
+                        $option->price = 5;
+                    } else {
+                        $option->price = 0;
+                    }
                 }
                 return $option;
             });
