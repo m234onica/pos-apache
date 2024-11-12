@@ -40,10 +40,6 @@ class OrderController extends Controller
     {
         $menus = Menu::where('status', true)->with('options')->orderBy('id', 'asc')->get();
         $menuOptions = MenuOption::where('status', true)->get();
-        $menuOptions->map(function ($menuOption) {
-            $menuOption->type = json_decode($menuOption->type);
-            return $menuOption;
-        });
         return view('order.create', compact('menus', 'menuOptions'));
     }
 
@@ -63,8 +59,15 @@ class OrderController extends Controller
                 $totalPrice = 0;
                 foreach ($request->input('carts') as $item) {
                     $remark = [];
-                    $totalPrice += $item['price'];
+                    $totalPrice += $item['price'] * $item['quantity'];
 
+                    foreach ($item['options'] as $option) {
+                        if (in_array('BASIC', $option['type'])) {
+                            $remark['basic'] = $option['name'];
+                        } else  {
+
+                        }
+                    }
                     if (isset($item['spicyOptions'])) {
                         $remark = array_merge(array_column($item['options'], 'name'), [$item['spicyOptions']['name']]);
                     }
@@ -76,9 +79,9 @@ class OrderController extends Controller
                     $order->items()->create([
                         'name' => $item['name'],
                         'price' => $item['price'],
-                        'quantity' => 1,
-                        'total_price' => $item['price'],
-                        'remark' => json_encode($remark, JSON_UNESCAPED_UNICODE) ?? '{}',
+                        'quantity' => $item['quantity'],
+                        'total_price' => $item['price'] * $item['quantity'],
+                        'remark' => json_encode($remark, JSON_UNESCAPED_UNICODE) ?? [],
                     ]);
                 }
 

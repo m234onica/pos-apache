@@ -32,8 +32,9 @@ class MenuSeeder extends Seeder
                 ]);
             } else {
                 $menuOptions->map(function ($menuOption) use ($menu) {
-                    $menuOptionType = json_decode($menuOption->type);
-                    if (in_array($menu->type, $menuOptionType)) {
+                    $menuOptionType = $menuOption->type;
+                    // 若是 menu type == BASIC，關聯 BASIC 的 menu options，若是 menu type == CLUB，關聯 CLUB 跟 BASIC 的 menu options
+                    if ($menu->type == 'BASIC' && $menuOptionType == 'BASIC' || $menu->type == 'CLUB' && ($menuOptionType == 'BASIC' || $menuOptionType == 'CLUB')) {
                         DB::table('menu_option_refs')->insert([
                             'menu_id' => $menu->id,
                             'menu_option_id' => $menuOption->id,
@@ -84,20 +85,20 @@ class MenuSeeder extends Seeder
         $now = Carbon::now();
 
         $menuOptions = [
-            ['name' => '紫米', 'price' => 5, 'type' => ['RICE']],
-            ['name' => '蘿蔔', 'price' => 0, 'type' => ['BASIC', 'CLUB']],
-            ['name' => '酸菜', 'price' => 0, 'type' => ['BASIC', 'CLUB']],
-            ['name' => '油條', 'price' => 0, 'type' => ['BASIC', 'CLUB']],
-            ['name' => '肉鬆', 'price' => 0, 'type' => ['BASIC', 'CLUB']],
-            ['name' => '蔥蛋', 'price' => 0, 'type' => ['CLUB']],
-            ['name' => '滷蛋', 'price' => 0, 'type' => ['CLUB']],
-            ['name' => '玉米', 'price' => 0, 'type' => ['CLUB']],
-            ['name' => '鮪魚', 'price' => 0, 'type' => ['CLUB']],
-            ['name' => '小辣', 'price' => 0, 'type' => ['SPICY']],
-            ['name' => '中辣', 'price' => 0, 'type' => ['SPICY']],
-            ['name' => '大辣', 'price' => 0, 'type' => ['SPICY']],
-            ['name' => '小杯', 'price' => 0, 'type' => ['DRINK']],
-            ['name' => '大杯', 'price' => 5, 'type' => ['DRINK']],
+            ['name' => '紫米', 'price' => 5, 'type' => 'RICE'],
+            ['name' => '蘿蔔', 'price' => 0, 'type' => 'BASIC'],
+            ['name' => '酸菜', 'price' => 0, 'type' => 'BASIC'],
+            ['name' => '油條', 'price' => 0, 'type' => 'BASIC'],
+            ['name' => '肉鬆', 'price' => 0, 'type' => 'BASIC'],
+            ['name' => '蔥蛋', 'price' => 0, 'type' => 'CLUB'],
+            ['name' => '滷蛋', 'price' => 0, 'type' => 'CLUB'],
+            ['name' => '玉米', 'price' => 0, 'type' => 'CLUB'],
+            ['name' => '鮪魚', 'price' => 0, 'type' => 'CLUB'],
+            ['name' => '小辣', 'price' => 0, 'type' => 'SPICY'],
+            ['name' => '中辣', 'price' => 0, 'type' => 'SPICY'],
+            ['name' => '大辣', 'price' => 0, 'type' => 'SPICY'],
+            ['name' => '小杯', 'price' => 0, 'type' => 'DRINK'],
+            ['name' => '大杯', 'price' => 5, 'type' => 'DRINK'],
         ];
 
         foreach ($menuOptions as $menuOption) {
@@ -107,7 +108,7 @@ class MenuSeeder extends Seeder
                 ],
                 [
                     'price' => $menuOption['price'],
-                    'type' => json_encode($menuOption['type']),
+                    'type' => $menuOption['type'],
                     'status' => true,
                     'created_at' => $now,
                     'updated_at' => $now,
