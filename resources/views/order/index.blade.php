@@ -20,14 +20,17 @@
     <div class="order-card processing">
         <div class="order-header">
             <span>{{ $order->order_no }}</span>
-            <span>{{ $order->created_at }}</span>
+            <span>{{ $order->created_at->format('H:i:s') }}</span>
         </div>
         <!-- Order items -->
         @foreach ($order->items as $item)
         <div class="order-item">
             <div>
                 <h4>{{$item->name}} x {{ $item->quantity}}</h4>
-                <p>{{ $item->set }}</p>
+                <p>{{ $item->basic }}</p>
+                <p>{{ $item->club }}</p>
+                <p>{{ $item->spicy }}</p>
+                <p>{{ $item->drink }}</p>
             </div>
             <span>${{ $item->total_price }}</span>
         </div>
@@ -45,7 +48,7 @@
     <div class="order-card checkout">
         <div class="order-header">
             <span>{{ $order->order_no }}</span>
-            <span>{{ $order->created_at }}</span>
+            <span>{{ $order->created_at->format('H:i:s') }}</span>
         </div>
 
         <!-- Order items -->
@@ -53,8 +56,10 @@
         <div class="order-item">
             <div>
                 <h4>{{$item->name}} x {{ $item->quantity}}</h4>
-                <p>{{ $item->set }}</p>
-
+                <p>{{ $item->basic }}</p>
+                <p>{{ $item->club }}</p>
+                <p>{{ $item->spicy }}</p>
+                <p>{{ $item->drink }}</p>
             </div>
             <span>${{ $item->total_price }}</span>
         </div>
@@ -75,7 +80,7 @@
                 check_circle
             </span>
             <span style="text-align: center;">{{ $order->order_no }}</span>
-            <span style="text-align: center;">{{ $order->created_at }}</span>
+            <span style="text-align: center;">{{ $order->created_at->format('H:i:s') }}</span>
             <!-- Collapse Button -->
             <span class="view" style="width: 10%; font-size: 24px;">查看訂單詳情</span>
         </div>
@@ -86,7 +91,10 @@
             <div class="order-item">
                 <div>
                     <h4>{{$item->name}} x {{ $item->quantity}}</h4>
-                    <p>{{ $item->set }}</p>
+                    <p>{{ $item->basic }}</p>
+                    <p>{{ $item->club }}</p>
+                    <p>{{ $item->spicy }}</p>
+                    <p>{{ $item->drink }}</p>
                 </div>
                 <span>${{ $item->total_price }}</span>
             </div>
@@ -109,7 +117,7 @@
                 </span>
                 <span>{{ $order->order_no }}</span>
             </div>
-            <span>{{ $order->created_at }}</span>
+            <span>{{ $order->created_at->format('H:i:s') }}</span>
             <span class="view">查看訂單詳情</span>
         </div>
 
@@ -118,8 +126,11 @@
             @foreach($order->items as $item)
             <div class="order-item">
                 <div>
-                    <h4>{{ $item->name }}</h4>
-                    <p>{{ $item->set }}</p>
+                    <h4>{{$item->name}} x {{ $item->quantity}}</h4>
+                    <p>{{ $item->basic }}</p>
+                    <p>{{ $item->club }}</p>
+                    <p>{{ $item->spicy }}</p>
+                    <p>{{ $item->drink }}</p>
                 </div>
                 <span>${{ $item->total_price }}</span>
             </div>
