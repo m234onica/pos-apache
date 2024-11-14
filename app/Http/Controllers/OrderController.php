@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Menu;
 use App\Models\MenuOption;
 use App\Models\Order;
+use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
 {
@@ -51,6 +53,21 @@ class OrderController extends Controller
     public function store(Request $request, $id = null)
     {
         try {
+            Validator::make($request->all(), [
+                'carts' => 'required|array|min:1', // carts 必須是至少有一個項目的陣列
+                'carts.*.name' => 'required|string',
+                'carts.*.price' => 'required|integer|min:0',
+                'carts.*.type' => 'required|string|in:BASIC,CLUB,RICE,SPICY,DRINK,ADVANCED,RICE_ADVANCED', // 假設 type 只能是 DRINK 或 FOOD
+                'carts.*.quantity' => 'required|integer|min:1',
+                'carts.*.options' => 'nullable|array',
+                'carts.*.riceOptions' => 'nullable',
+                'carts.*.riceAdvancedOptions' => 'nullable',
+                'carts.*.advancedOptions' => 'nullable|array',
+                'carts.*.spicyOptions' => 'nullable',
+                'carts.*.drinkOptions' => 'nullable|array',
+                'carts.*.totalPrice' => 'required|integer|min:1',
+            ])->validate();
+
             DB::beginTransaction();
             if ($id) {
                 $order = Order::where('id', $id)->update(['status' => $request->status]);
@@ -104,9 +121,20 @@ class OrderController extends Controller
 
                 $order->update(['price' => $totalPrice]);
             }
-        } catch (\Exception $e) {
+        } catch (ValidationException $e) {
             DB::rollBack();
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+            // 使用 errors() 方法來獲取所有驗證錯誤
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => $e->getMessage()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'An error occurred',
+                'error_detail' => $e->getMessage()
+            ], 500);
         }
 
         DB::commit();

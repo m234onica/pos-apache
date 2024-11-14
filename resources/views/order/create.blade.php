@@ -95,7 +95,7 @@
         data-toggle="modal"
         data-target="#cartModal"
         data-carts="">
-        顯示清單
+        顯示購物車
     </button>
 
     {{-- 引入 modal --}}
