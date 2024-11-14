@@ -585,3 +585,13 @@ input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
+
+// 自定義 SweetAlert2 樣式
+.swal2-popup {
+    width: 45em !important;
+    height: 20em !important;
+    .swal2-title {
+        padding: 1em 2em 0 !important;
+        font-size: 4em !important;
+    }
+}

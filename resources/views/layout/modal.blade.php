@@ -161,17 +161,27 @@
                 })
                 .then(response => {
                     if (response.ok) {
-                        alert('儲存成功!');
+                        Swal.fire({
+                            title: '儲存成功!',
+                            confirmButtonText:'<p style="font-size: 28px;">確認</p>',
+                        });
                         $('#editMenuPage').modal('hide');
                         location.reload();
                     } else if (response.status === 422) {
-                        alert('請填寫所有欄位!');
+                        Swal.fire({
+                            title: '請填寫所有欄位!',
+                            confirmButtonText:'<p style="font-size: 28px;">確認</p>',
+                        });
                     } else {
                         throw new Error('儲存失敗');
                     }
                 })
                 .catch(error => {
-                    alert(error.message || '儲存失敗，請重試!');
+                    Swal.fire({
+                        text: error.message || '儲存失敗，請重試!',
+                        confirmButtonText:'<p style="font-size: 28px;">確認</p>',
+                        icon: 'error',
+                    });
                 });
         }
 
@@ -531,8 +541,10 @@
             carts.push(cartItem);
 
             // 顯示通知或更新購物車視圖
-            alert('已加入購物車！');
-            console.log(carts); // 供調試用，查看購物車的內容
+            Swal.fire({
+                title: '已加入購物車！',
+                confirmButtonText:'<p style="font-size: 28px;">確認</p>',
+            });
         }
 
         function updateCartModalContent() {
@@ -668,17 +680,28 @@
                 })
                 .then(response => {
                     if (response.ok) {
-                        alert('訂單成立!');
-                        $('#cartModal').modal('hide');
-                        window.location.href = '/orders';
+                        Swal.fire({
+                            title: '訂單成立!',
+                            confirmButtonText:'<p style="font-size: 28px;">確認</p>',
+                        }).then(() => {
+                            $('#cartModal').modal('hide');
+                            window.location.href = '/orders';
+                        });
                     } else if (response.status === 422) {
-                        alert('請確認購物車是否有誤!');
+                        Swal.fire({
+                            title: '請確認購物車是否有誤!',
+                            confirmButtonText:'<p style="font-size: 28px;">確認</p>',
+                        });
                     } else {
                         throw new Error('訂單成立失敗');
                     }
                 })
                 .catch(error => {
-                    alert(error.message || '訂單成立失敗，請重試!');
+                    Swal.fire({
+                        icon: 'error',
+                        confirmButtonText:'<p style="font-size: 28px;">確認</p>',
+                        title: error.message || '訂單成立失敗，請重試!',
+                    });
                 });
         }
 

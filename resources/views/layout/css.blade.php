@@ -10,3 +10,6 @@
 <!-- <link rel="stylesheet" href="{{ URL::asset('./bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css') }}"> -->
 <link rel="stylesheet" href="{{ mix('css/app.css') }}">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+
+<!-- sweetalert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@latest"></script>
