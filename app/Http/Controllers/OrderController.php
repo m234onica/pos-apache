@@ -21,6 +21,8 @@ class OrderController extends Controller
                     $item->club = implode(', ', $remarkArr->CLUB ?? []);
                     $item->drink = $remarkArr->DRINK ?? '';
                     $item->spicy = $remarkArr->SPICY ?? '';
+                    $item->rice = $remarkArr->RICE ?? '';
+                    $item->riceAdvanced = $remarkArr->RICE_ADVANCED ?? '';
                 } else {
                     $item->basic = '無';
                 }
@@ -64,11 +66,25 @@ class OrderController extends Controller
                 $totalPrice = 0;
                 foreach ($request->input('carts') as $item) {
                     $remark = [];
-                    $totalPrice += $item['price'] * $item['quantity'];
+                    $totalPrice += $item['totalPrice'] * $item['quantity'];
 
-                    foreach ($item['options'] as $option) {
-                        $remark[$option['type']][] = $option['name'];
+                    foreach (['options', 'advancedOptions'] as $optionType) {
+                        if (!$item[$optionType]) {
+                            continue;
+                        }
+                        foreach ($item[$optionType] as $option) {
+                            $remark[$option['type']][] = $option['name'];
+                        }
                     }
+
+                    if (isset($item['riceOptions'])) {
+                        $remark['RICE'] = $item['riceOptions']['name'];
+                    }
+
+                    if (isset($item['riceAdvancedOptions'])) {
+                        $remark['RICE_ADVANCED'] = $item['riceAdvancedOptions']['name'];
+                    }
+
                     if (isset($item['spicyOptions'])) {
                         $remark['SPICY'] = $item['spicyOptions']['name'];
                     }
@@ -79,9 +95,9 @@ class OrderController extends Controller
 
                     $order->items()->create([
                         'name' => $item['name'],
-                        'price' => $item['price'],
+                        'price' => $item['totalPrice'],
                         'quantity' => $item['quantity'],
-                        'total_price' => $item['price'] * $item['quantity'],
+                        'total_price' => $item['totalPrice'] * $item['quantity'],
                         'remark' => json_encode($remark, JSON_UNESCAPED_UNICODE) ?? [],
                     ]);
                 }
@@ -90,7 +106,6 @@ class OrderController extends Controller
             }
         } catch (\Exception $e) {
             DB::rollBack();
-            dd($e);
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
 

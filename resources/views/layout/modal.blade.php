@@ -52,27 +52,45 @@
                     <input type="hidden" id="name">
                     <input type="hidden" id="type">
                     <input type="hidden" id="price">
+                    <div id="riceOptions" class=" form-group">
+                        <label class="label" for="riceOptions">配飯：</label>
+                        <div class="checkbox-grid" id="rice-options-container">
+                            <!-- 選項會動態填充 -->
+                        </div>
+                    </div>
+                    <div id="riceAdvancedOptions" class="form-group">
+                        <label class="label" for="riceAdvancedOptions">配飯備注：</label>
+                        <div class="checkbox-grid" id="rice-advanced-options-container">
+                            <!-- 選項會動態填充 -->
+                        </div>
+                    </div>
                     <div id="menuOptions" class="form-group">
-                        <label for="menuOptions">配菜：</label>
+                        <label class="label" for="menuOptions">配菜：</label>
                         <div class="checkbox-grid" id="options-container">
                             <!-- 選項會動態填充 -->
                         </div>
                     </div>
+                    <div id="advancedOptions" class="form-group">
+                        <label class="label" for="advancedOptions">配菜備注：</label>
+                        <div class="checkbox-grid" id="advanced-options-container">
+                            <!-- 選項會動態填充 -->
+                        </div>
+                    </div>
                     <div id="spicyOptions" class=" form-group">
-                        <label for="spicyOptions">辣度：</label>
+                        <label class="label" for="spicyOptions">辣度：</label>
                         <div class="checkbox-grid" id="spicy-options-container">
                             <!-- 選項會動態填充 -->
                         </div>
                     </div>
                     <div id="drinkOptions" class=" form-group">
-                        <label for="drinkOptions">尺寸：</label>
+                        <label class="label" for="drinkOptions">尺寸：</label>
                         <div class="checkbox-grid" id="drink-options-container">
                             <!-- 選項會動態填充 -->
                         </div>
                     </div>
                     <!-- 數量：數字選擇器 -->
                     <div id="quantity" class=" form-group">
-                        <label for="quantity">數量：</label>
+                        <label class="label" for="quantity">數量：</label>
                         <div class="quantity-container">
                             <button type="button" class="quantity-btn" onclick="decrement()">−</button>
                             <input type="number" id="quantityInput" name="quantity" value="1" min="1" readonly>
@@ -123,6 +141,40 @@
         initModalEvents();
         initMenuOptionsEvents();
 
+        // 表單提交（創建或更新菜單）
+        function submitMenuForm() {
+            const id = document.getElementById('menu-id').value;
+            const url = id ? `/menu/${id}` : '/menu';
+            const method = id ? 'POST' : 'POST';
+
+            fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        name: document.getElementById('meal-name').value,
+                        price: document.getElementById('price').value,
+                        status: document.getElementById('status').checked ? 1 : 0
+                    })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('儲存成功!');
+                        $('#editMenuPage').modal('hide');
+                        location.reload();
+                    } else if (response.status === 422) {
+                        alert('請填寫所有欄位!');
+                    } else {
+                        throw new Error('儲存失敗');
+                    }
+                })
+                .catch(error => {
+                    alert(error.message || '儲存失敗，請重試!');
+                });
+        }
+
         // 當 cartModal 顯示時更新購物車內容
         $('#cartModal').on('show.bs.modal', function() {
             $(this).removeAttr('aria-hidden');
@@ -154,6 +206,9 @@
                         type: this.getAttribute("data-menu-type"),
                         quantity: this.getAttribute("data-quantity"),
                         drinkOptions: JSON.parse(this.getAttribute("data-menu-drink-options") || '[]'),
+                        riceOptions: JSON.parse(this.getAttribute("data-menu-rice-options") || '[]'),
+                        riceAdvancedOptions: JSON.parse(this.getAttribute("data-menu-rice-advanced-options") || '[]'),
+                        advancedOptions: JSON.parse(this.getAttribute("data-menu-advanced-options") || '[]'),
                         options: JSON.parse(this.getAttribute("data-menu-default-options") || '[]'),
                         allOptions: JSON.parse(this.getAttribute("data-menu-all-options") || '[]'),
                         spicyOptions: JSON.parse(this.getAttribute("data-menu-spicy-options") || '[]')
@@ -173,7 +228,10 @@
             options,
             allOptions,
             spicyOptions,
-            drinkOptions
+            drinkOptions,
+            riceOptions,
+            riceAdvancedOptions,
+            advancedOptions
         }) {
             document.getElementById('menu-id').value = id;
             document.getElementById('name').value = name;
@@ -185,6 +243,9 @@
             document.getElementById("options-container").setAttribute("data-menu-all-options", JSON.stringify(allOptions));
             document.getElementById("drink-options-container").setAttribute("data-menu-drink-options", JSON.stringify(drinkOptions));
             document.getElementById("spicy-options-container").setAttribute("data-menu-spicy-options", JSON.stringify(spicyOptions));
+            document.getElementById("rice-options-container").setAttribute("data-menu-rice-options", JSON.stringify(riceOptions));
+            document.getElementById("rice-advanced-options-container").setAttribute("data-menu-rice-advanced-options", JSON.stringify(riceAdvancedOptions));
+            document.getElementById("advanced-options-container").setAttribute("data-menu-advanced-options", JSON.stringify(advancedOptions));
 
             // 將 options 轉換為一個 Set，方便查找
             const selectedOptions = new Set(options.map(opt => opt.id));
@@ -193,6 +254,9 @@
                 document.getElementById("menuOptions").style.display = "none";
                 document.getElementById("spicyOptions").style.display = "none";
                 document.getElementById("drinkOptions").style.display = "block";
+                document.getElementById("riceOptions").style.display = "none";
+                document.getElementById("riceAdvancedOptions").style.display = "none";
+                document.getElementById("advancedOptions").style.display = "none";
 
                 // 填充飲料選項
                 const drinkOptionArray = Array.isArray(drinkOptions) ? drinkOptions : Object.values(drinkOptions);
@@ -204,15 +268,33 @@
                 document.getElementById("menuOptions").style.display = "block";
                 document.getElementById("spicyOptions").style.display = "block";
                 document.getElementById("drinkOptions").style.display = "none";
+                document.getElementById("riceOptions").style.display = "block";
+                document.getElementById("riceAdvancedOptions").style.display = "block";
+                document.getElementById("advancedOptions").style.display = "block";
             }
 
             // 確保 allOptions 和 spicyOptions 是數組
             const optionsArray = Array.isArray(allOptions) ? allOptions : Object.values(allOptions);
+            const advancedOptionsArray = Array.isArray(advancedOptions) ? advancedOptions : Object.values(advancedOptions);
+            const riceOptionsArray = Array.isArray(riceOptions) ? riceOptions : Object.values(riceOptions);
+            const riceAdvancedOptionsArray = Array.isArray(riceAdvancedOptions) ? riceAdvancedOptions : Object.values(riceAdvancedOptions);
             const spicyOptionsArray = Array.isArray(spicyOptions) ? spicyOptions : Object.values(spicyOptions);
+
+            // 填充配飯選項
+            const riceOptionsContainer = document.getElementById("rice-options-container");
+            populateOptions(riceOptionsArray, selectedOptions, riceOptionsContainer, true);
+
+            // 填充配飯備注選項
+            const riceAdvancedOptionsContainer = document.getElementById("rice-advanced-options-container");
+            populateOptions(riceAdvancedOptionsArray, selectedOptions, riceAdvancedOptionsContainer, true);
 
             // 填充配菜選項
             const optionsContainer = document.getElementById("options-container");
             populateOptions(optionsArray, selectedOptions, optionsContainer);
+
+            // 填充配菜備注選項
+            const advancedOptionsContainer = document.getElementById("advanced-options-container");
+            populateOptions(advancedOptionsArray, selectedOptions, advancedOptionsContainer);
 
             // 填充辣味選項，設置為單選
             const spicyOptionsContainer = document.getElementById("spicy-options-container");
@@ -276,7 +358,11 @@
 
             // 判斷 #options-container 是否顯示，否則使用 #drink-options-container
             if (menuOptionsModal.querySelector('#options-container').offsetParent !== null) {
-                optionsNodeList = menuOptionsModal.querySelectorAll('#options-container input[type="checkbox"]:checked');
+                // 使用 Array.from 將 NodeList 轉換為 Array，再合併其他選項
+                optionsNodeList = Array.from(menuOptionsModal.querySelectorAll('#options-container input[type="checkbox"]:checked'))
+                    .concat(Array.from(menuOptionsModal.querySelectorAll('#rice-options-container input[type="checkbox"]:checked')))
+                    .concat(Array.from(menuOptionsModal.querySelectorAll('#advanced-options-container input[type="checkbox"]:checked')));
+
             } else if (menuOptionsModal.querySelector('#drink-options-container').offsetParent !== null) {
                 optionsNodeList = menuOptionsModal.querySelectorAll('#drink-options-container input[type="checkbox"]:checked');
             }
@@ -305,40 +391,6 @@
                 input.value = parseInt(input.value) - 1;
             }
             updateTotalPrice();
-        }
-
-        // 表單提交（創建或更新菜單）
-        function submitMenuForm() {
-            const id = document.getElementById('menu-id').value;
-            const url = id ? `/menu/${id}` : '/menu';
-            const method = id ? 'POST' : 'POST';
-
-            fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        name: document.getElementById('meal-name').value,
-                        price: document.getElementById('price').value,
-                        status: document.getElementById('status').checked ? 1 : 0
-                    })
-                })
-                .then(response => {
-                    if (response.ok) {
-                        alert('儲存成功!');
-                        $('#editMenuPage').modal('hide');
-                        location.reload();
-                    } else if (response.status === 422) {
-                        alert('請填寫所有欄位!');
-                    } else {
-                        throw new Error('儲存失敗');
-                    }
-                })
-                .catch(error => {
-                    alert(error.message || '儲存失敗，請重試!');
-                });
         }
 
         // 加入購物車
@@ -376,26 +428,73 @@
             }
 
             // 解析 JSON 並轉換為對象
-            const optionMapArray = JSON.parse(document.getElementById("options-container").getAttribute("data-menu-all-options") || '[]');
+            // 配菜
+            const optionMapArray = Array.isArray(JSON.parse(document.getElementById("options-container").getAttribute("data-menu-all-options") || '[]')) ?
+                JSON.parse(document.getElementById("options-container").getAttribute("data-menu-all-options") || '[]') :
+                Object.values(JSON.parse(document.getElementById("options-container").getAttribute("data-menu-all-options") || '[]'));
+
+            // 配飯
+            const riceOptionMapArray = Array.isArray(JSON.parse(document.getElementById("rice-options-container").getAttribute("data-menu-rice-options") || '[]')) ?
+                JSON.parse(document.getElementById("rice-options-container").getAttribute("data-menu-rice-options") || '[]') :
+                Object.values(JSON.parse(document.getElementById("rice-options-container").getAttribute("data-menu-rice-options") || '[]'));
+
+            // 配飯備注
+            const riceAdvancedOptionMapArray = Array.isArray(JSON.parse(document.getElementById("rice-advanced-options-container").getAttribute("data-menu-rice-advanced-options") || '[]')) ?
+                JSON.parse(document.getElementById("rice-advanced-options-container").getAttribute("data-menu-rice-advanced-options") || '[]') :
+                Object.values(JSON.parse(document.getElementById("rice-advanced-options-container").getAttribute("data-menu-rice-advanced-options") || '[]'));
+
+            // 配菜備注
+            const advancedOptionMapArray = Array.isArray(JSON.parse(document.getElementById("advanced-options-container").getAttribute("data-menu-advanced-options") || '[]')) ?
+                JSON.parse(document.getElementById("advanced-options-container").getAttribute("data-menu-advanced-options") || '[]') :
+                Object.values(JSON.parse(document.getElementById("advanced-options-container").getAttribute("data-menu-advanced-options") || '[]'));
+
             const drinkOptionMapArray = Array.isArray(JSON.parse(document.getElementById("drink-options-container").getAttribute("data-menu-drink-options") || '[]')) ?
                 JSON.parse(document.getElementById("drink-options-container").getAttribute("data-menu-drink-options") || '[]') :
                 Object.values(JSON.parse(document.getElementById("drink-options-container").getAttribute("data-menu-drink-options") || '[]'));
+
             const spicyOptionMapArray = Array.isArray(JSON.parse(document.getElementById("spicy-options-container").getAttribute("data-menu-spicy-options") || '[]')) ?
                 JSON.parse(document.getElementById("spicy-options-container").getAttribute("data-menu-spicy-options") || '[]') :
                 Object.values(JSON.parse(document.getElementById("spicy-options-container").getAttribute("data-menu-spicy-options") || '[]'));
 
             // 生成以 id 為鍵的對象
             const optionMapObject = mapOptionsById(optionMapArray);
+            const riceOptionMapObject = mapOptionsById(riceOptionMapArray);
+            const riceAdvancedOptionMapObject = mapOptionsById(riceAdvancedOptionMapArray);
+            const advancedOptionMapObject = mapOptionsById(advancedOptionMapArray);
             const drinkOptionMapObject = mapOptionsById(drinkOptionMapArray);
             const spicyOptionMapObject = mapOptionsById(spicyOptionMapArray);
 
             let selectedOptions = [];
+            let selectedAdvancedOption = [];
+            let selectedRiceOption = null;
+            let selectedRiceAdvancedOption = null;
             let selectedSpicyOption = null;
             let selectedDrinkOption = null;
 
             if (type !== 'DRINK') {
-                // 獲取配菜選項和辣度選項
+                // 獲取配飯選項
+                const selectedRiceOptionElement = document.querySelector('#rice-options-container input[type="checkbox"]:checked');
+                selectedRiceOption = selectedRiceOptionElement ? {
+                    id: selectedRiceOptionElement.value,
+                    name: riceOptionMapObject[selectedRiceOptionElement.value]?.name || "未知",
+                    price: riceOptionMapObject[selectedRiceOptionElement.value]?.price || 0
+                } : null;
+
+                // 獲取配飯備注選項
+                const selectedRiceAdvancedOptionElement = document.querySelector('#rice-advanced-options-container input[type="checkbox"]:checked');
+                selectedRiceAdvancedOption = selectedRiceAdvancedOptionElement ? {
+                    id: selectedRiceAdvancedOptionElement.value,
+                    name: riceAdvancedOptionMapObject[selectedRiceAdvancedOptionElement.value]?.name || "未知",
+                    price: riceAdvancedOptionMapObject[selectedRiceAdvancedOptionElement.value]?.price || 0
+                } : null;
+
+                // 獲取配菜選項
                 selectedOptions = getSelectedOptions('options-container', optionMapObject);
+
+                // 獲取配菜備注選項
+                selectedAdvancedOption = getSelectedOptions('advanced-options-container', advancedOptionMapObject);
+
+                // 獲取辣度選項
                 const selectedSpicyOptionElement = document.querySelector('#spicy-options-container input[type="checkbox"]:checked');
                 selectedSpicyOption = selectedSpicyOptionElement ? {
                     id: selectedSpicyOptionElement.value,
@@ -421,6 +520,9 @@
                 type,
                 quantity,
                 options: selectedOptions,
+                riceOptions: selectedRiceOption,
+                riceAdvancedOptions: selectedRiceAdvancedOption,
+                advancedOptions: selectedAdvancedOption,
                 spicyOptions: selectedSpicyOption,
                 drinkOptions: selectedDrinkOption
             };
@@ -456,6 +558,8 @@
                 // 計算主商品及其選項的總價格
                 let totalPrice = cartItem.price + (cartItem.options || []).reduce((acc, option) => acc + option.price, 0);
                 totalPrice += (cartItem.spicyOptions?.price || 0) + (cartItem.drinkOptions?.price || 0);
+                totalPrice += (cartItem.riceOptions?.price || 0) + (cartItem.riceAdvancedOptions?.price || 0);
+                totalPrice += (cartItem.advancedOptions || []).reduce((acc, option) => acc + option.price, 0);
 
                 // 將計算後的價格存儲到 cartItem 的 computedPrice 屬性（不覆蓋原始 price）
                 cartItem.totalPrice = totalPrice;
@@ -478,7 +582,7 @@
                 const optionsList = document.createElement('div');
                 optionsList.classList.add('options-list');
 
-                // 顯示各個選項的名稱和價格，並在不是最後一個選項時加上 "/"
+                // 顯示各個選項的名稱和價格
                 (cartItem.options || []).forEach((option, index) => {
                     const optionItem = document.createElement('span');
                     optionItem.style = "margin-right: 12px;";
@@ -487,12 +591,44 @@
                 });
                 itemDiv.appendChild(optionsList);
 
+                // 顯示配菜備注選項
+                if (cartItem.advancedOptions) {
+                    const optionsList = document.createElement('div');
+                    optionsList.classList.add('options-list');
+
+                    // 顯示各個選項的名稱和價格
+                    (cartItem.advancedOptions || []).forEach((option, index) => {
+                        const advanceOptionItem = document.createElement('span');
+                        advanceOptionItem.style = "margin-right: 12px;";
+                        advanceOptionItem.innerText = `${option.name} (+$${option.price}) `;
+                        optionsList.appendChild(advanceOptionItem);
+                    });
+
+                    itemDiv.appendChild(optionsList);
+                }
+
                 // 顯示辣度選項
                 if (cartItem.spicyOptions) {
                     const spicyOptionItem = document.createElement('p');
                     spicyOptionItem.classList.add('options-list');
                     spicyOptionItem.innerText = `${cartItem.spicyOptions.name} (+$${cartItem.spicyOptions.price})`;
                     itemDiv.appendChild(spicyOptionItem);
+                }
+
+                // 顯示配飯選項
+                if (cartItem.riceOptions) {
+                    const riceOptionItem = document.createElement('p');
+                    riceOptionItem.classList.add('options-list');
+                    riceOptionItem.innerText = `${cartItem.riceOptions.name} (+$${cartItem.riceOptions.price})`;
+                    itemDiv.appendChild(riceOptionItem);
+                }
+
+                // 顯示配飯備注選項
+                if (cartItem.riceAdvancedOptions) {
+                    const riceAdvancedOptionItem = document.createElement('p');
+                    riceAdvancedOptionItem.classList.add('options-list');
+                    riceAdvancedOptionItem.innerText = `${cartItem.riceAdvancedOptions.name} (+$${cartItem.riceAdvancedOptions.price})`;
+                    itemDiv.appendChild(riceAdvancedOptionItem);
                 }
 
                 // 顯示尺寸選項

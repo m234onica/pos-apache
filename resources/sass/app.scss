@@ -83,7 +83,7 @@ body {
 
         .menu-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 20px;
 
             .empty p {
@@ -231,11 +231,19 @@ body {
         /* 表單欄位樣式 */
         .form-group {
             margin-bottom: 20px;
-            label {
+            .label {
                 font-size: 36px;
+                font-weight: 500;
+                color: #333;
+                padding: 0;
+                margin: 0;
+            }
+            label {
+                font-size: 30px;
                 font-weight: 400;
                 color: #333;
                 margin-bottom: 12px;
+                margin-left: 8px;
             }
 
             input[type="text"] {
@@ -248,9 +256,10 @@ body {
 
             .checkbox-grid {
                 display: grid;
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: repeat(3, 1fr);
                 gap: 10px;
-                padding: 12px;
+                padding: 0 4px;
+                margin-top: 4px;
             }
 
             .checkbox-item {
@@ -259,9 +268,9 @@ body {
             }
 
             .checkbox-item input[type="checkbox"] {
-                margin: 0px 8px 4px 8px;
-                width: 32px;
-                height: 32px;
+                margin: 0px 8px 8px 8px;
+                width: 26px;
+                height: 26px;
                 transform: scale(1.5); /* 根據需要調整大小 */
                 -webkit-transform: scale(1.5); /* Safari 特殊處理 */
             }

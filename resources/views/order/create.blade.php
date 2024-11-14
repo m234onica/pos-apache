@@ -23,34 +23,47 @@
         $canAddMenuOptions = collect([]);
 
         if ($menu->type === 'DRINK') {
-            // 只保留類型為 DRINK 的選項
-            $drinkOptions = $menuOptions->filter(function ($option) {
-                return $option->type === 'DRINK'; // 修正判斷條件
-            });
+        // 只保留類型為 DRINK 的選項
+        $drinkOptions = $menuOptions->filter(function ($option) {
+        return $option->type === 'DRINK'; // 修正判斷條件
+        });
         } elseif (in_array($menu->type, ['BASIC', 'CLUB'])) {
-            // 保留非 DRINK 和非 SPICY 的選項
-            $canAddMenuOptions = $menuOptions->filter(function ($option) {
-                return !in_array($option->type, ['DRINK', 'SPICY']); // 排除 DRINK 和 SPICY
-            })->map(function ($option) use ($menu) {
-                if ($menu->type === 'BASIC') {
-                    // 如果 $menu->type 是 'BASIC' 且 option 的 type 是 'BASIC'，則 price = 0
-                    // 如果 $menu->type 是 'BASIC' 且 option 的 type 是 'CLUB'，則 price = 5
-                    $option->price = ($option->type === 'BASIC') ? 0 : 5;
-                } elseif ($menu->type === 'CLUB') {
-                    // 如果 $menu->type 是 'CLUB'，無論 option 的 type 是 'BASIC' 或 'CLUB'，price = 0
-                    if ($option->type === 'RICE') {
-                        $option->price = 5;
-                    } else {
-                        $option->price = 0;
-                    }
-                }
-                return $option;
-            });
+        // 保留非 DRINK 和非 SPICY 的選項
+        $canAddMenuOptions = $menuOptions->filter(function ($option) {
+        return in_array($option->type, ['BASIC', 'CLUB']); // 排除 DRINK 和 SPICY
+        })->map(function ($option) use ($menu) {
+        if ($menu->type === 'BASIC') {
+        // 如果 $menu->type 是 'BASIC' 且 option 的 type 是 'BASIC'，則 price = 0
+        // 如果 $menu->type 是 'BASIC' 且 option 的 type 是 'CLUB'，則 price = 5
+        $option->price = ($option->type === 'BASIC') ? 0 : $option->price;
+        } elseif ($menu->type === 'CLUB') {
+        // 如果 $menu->type 是 'CLUB'，無論 option 的 type 是 'BASIC' 或 'CLUB'，price = 0
+        if ($option->type !== 'RICE' && $option->type !== 'ADVANCED') {
+        $option->price = 0;
         }
+        }
+        return $option;
+        });
+        }
+
+        // 只保留類型為 RICE 的選項
+        $riceOptions = $menuOptions->filter(function ($option) {
+        return $option->type === 'RICE';
+        });
+
+        // 只保留類型為 RICE_ADVANCED 的選項
+        $riceAdvancedOptions = $menuOptions->filter(function ($option) {
+        return $option->type === 'RICE_ADVANCED';
+        });
+
+        // 只保留類型為 ADVANCED 的選項
+        $advancedOptions = $menuOptions->filter(function ($option) {
+        return $option->type === 'ADVANCED';
+        });
 
         // 只保留類型為 SPICY 的選項
         $spicyOptions = $menuOptions->filter(function ($option) {
-            return $option->type === 'SPICY';
+        return $option->type === 'SPICY';
         });
         @endphp
         <button id="menu-{{ $menu->id }}" class="menu-item"
@@ -63,6 +76,9 @@
             data-menu-type="{{ $menu->type }}"
             data-menu-default-options="{{ $menu->options }}"
             data-menu-all-options="{{ $canAddMenuOptions }}"
+            data-menu-rice-options="{{ $riceOptions }}"
+            data-menu-advanced-options="{{ $advancedOptions }}"
+            data-menu-rice-advanced-options="{{ $riceAdvancedOptions }}"
             data-menu-drink-options="{{ $drinkOptions }}"
             data-menu-spicy-options="{{ $spicyOptions }}">
             <div class="item-details">

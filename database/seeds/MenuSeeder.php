@@ -86,17 +86,30 @@ class MenuSeeder extends Seeder
 
         $menuOptions = [
             ['name' => '紫米', 'price' => 5, 'type' => 'RICE'],
+            ['name' => '混米', 'price' => 5, 'type' => 'RICE'],
+
+            ['name' => '加飯', 'price' => 0, 'type' => 'RICE_ADVANCED'],
+            ['name' => '少飯', 'price' => 0, 'type' => 'RICE_ADVANCED'],
+
             ['name' => '蘿蔔', 'price' => 0, 'type' => 'BASIC'],
             ['name' => '酸菜', 'price' => 0, 'type' => 'BASIC'],
             ['name' => '油條', 'price' => 0, 'type' => 'BASIC'],
             ['name' => '肉鬆', 'price' => 0, 'type' => 'BASIC'],
-            ['name' => '蔥蛋', 'price' => 0, 'type' => 'CLUB'],
-            ['name' => '滷蛋', 'price' => 0, 'type' => 'CLUB'],
-            ['name' => '玉米', 'price' => 0, 'type' => 'CLUB'],
-            ['name' => '鮪魚', 'price' => 0, 'type' => 'CLUB'],
+
+            ['name' => '蔥蛋', 'price' => 10, 'type' => 'CLUB'],
+            ['name' => '滷蛋', 'price' => 10, 'type' => 'CLUB'],
+            ['name' => '玉米', 'price' => 10, 'type' => 'CLUB'],
+
+            ['name' => '起司', 'price' => 10, 'type' => 'ADVANCED'],
+            ['name' => '油條', 'price' => 10, 'type' => 'ADVANCED'],
+            ['name' => '蘿蔔加量', 'price' => 0, 'type' => 'ADVANCED'],
+            ['name' => '酸菜加量', 'price' => 0, 'type' => 'ADVANCED'],
+            ['name' => '肉鬆加量', 'price' => 0, 'type' => 'ADVANCED'],
+
             ['name' => '小辣', 'price' => 0, 'type' => 'SPICY'],
             ['name' => '中辣', 'price' => 0, 'type' => 'SPICY'],
             ['name' => '大辣', 'price' => 0, 'type' => 'SPICY'],
+
             ['name' => '小杯', 'price' => 0, 'type' => 'DRINK'],
             ['name' => '大杯', 'price' => 5, 'type' => 'DRINK'],
         ];
@@ -104,7 +117,8 @@ class MenuSeeder extends Seeder
         foreach ($menuOptions as $menuOption) {
             DB::table('menu_options')->updateOrInsert(
                 [
-                    'name' => $menuOption['name']
+                    'name' => $menuOption['name'],
+                    'type' => $menuOption['type'],
                 ],
                 [
                     'price' => $menuOption['price'],

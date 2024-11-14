@@ -15,49 +15,23 @@
     @endif
 
     @foreach ($orders as $order)
-    @if ($order->status == 'PROCESSING')
-    <!-- Order Card (Processing) -->
-    <div class="order-card processing">
-        <div class="order-header">
-            <span>{{ $order->order_no }}</span>
-            <span>{{ $order->created_at->format('H:i:s') }}</span>
-        </div>
-        <!-- Order items -->
-        @foreach ($order->items as $item)
-        <div class="order-item">
-            <div>
-                <h4>{{$item->name}} x {{ $item->quantity}}</h4>
-                <p>{{ $item->basic }}</p>
-                <p>{{ $item->club }}</p>
-                <p>{{ $item->spicy }}</p>
-                <p>{{ $item->drink }}</p>
-            </div>
-            <span>${{ $item->total_price }}</span>
-        </div>
-        @endforeach
-
-        <div class="total">
-            <span class="total-label">總計:</span>
-            <span style="color:red">{{ $order->price }}</span>
-        </div>
-        <button class="processing-button" onclick="updateOrderStatus({{ $order->id }}, 'COMPLETED')">處理中</button>
-    </div>
-
-    @elseif ($order->status == 'UNPAID')
+    @if ($order->status == 'UNPAID')
     <!-- Total and Checkout -->
     <div class="order-card checkout">
         <div class="order-header">
             <span>{{ $order->order_no }}</span>
             <span>{{ $order->created_at->format('H:i:s') }}</span>
         </div>
-
         <!-- Order items -->
         @foreach($order->items as $item)
         <div class="order-item">
             <div>
                 <h4>{{$item->name}} x {{ $item->quantity}}</h4>
+                <p>{{ $item->rice }}</p>
+                <p>{{ $item->rice_advanced }}</p>
                 <p>{{ $item->basic }}</p>
                 <p>{{ $item->club }}</p>
+                <p>{{ $item->advanced }}</p>
                 <p>{{ $item->spicy }}</p>
                 <p>{{ $item->drink }}</p>
             </div>
@@ -70,6 +44,38 @@
             <span style="color:red">{{ $order->price }}</span>
         </div>
         <button class="checkout-button" onclick="updateOrderStatus({{ $order->id }}, 'PROCESSING')">結帳</button>
+    </div>
+
+    @elseif ($order->status == 'PROCESSING')
+    <!-- Order Card (Processing) -->
+    <div class="order-card processing">
+        <div class="order-header">
+            <span>{{ $order->order_no }}</span>
+            <span>{{ $order->created_at->format('H:i:s') }}</span>
+        </div>
+
+        <!-- Order items -->
+        @foreach ($order->items as $item)
+        <div class="order-item">
+            <div>
+                <h4>{{$item->name}} x {{ $item->quantity}}</h4>
+                <p>{{ $item->rice }}</p>
+                <p>{{ $item->rice_advanced }}</p>
+                <p>{{ $item->basic }}</p>
+                <p>{{ $item->club }}</p>
+                <p>{{ $item->advanced }}</p>
+                <p>{{ $item->spicy }}</p>
+                <p>{{ $item->drink }}</p>
+            </div>
+            <span>${{ $item->total_price }}</span>
+        </div>
+        @endforeach
+
+        <div class="total">
+            <span class="total-label">總計:</span>
+            <span style="color:red">{{ $order->price }}</span>
+        </div>
+        <button class="processing-button" onclick="updateOrderStatus({{ $order->id }}, 'COMPLETED')">處理中</button>
     </div>
 
     @elseif ($order->status == 'COMPLETED')
@@ -91,8 +97,11 @@
             <div class="order-item">
                 <div>
                     <h4>{{$item->name}} x {{ $item->quantity}}</h4>
+                    <p>{{ $item->rice }}</p>
+                    <p>{{ $item->rice_advanced }}</p>
                     <p>{{ $item->basic }}</p>
                     <p>{{ $item->club }}</p>
+                    <p>{{ $item->advanced }}</p>
                     <p>{{ $item->spicy }}</p>
                     <p>{{ $item->drink }}</p>
                 </div>
@@ -127,8 +136,11 @@
             <div class="order-item">
                 <div>
                     <h4>{{$item->name}} x {{ $item->quantity}}</h4>
+                    <p>{{ $item->rice }}</p>
+                    <p>{{ $item->rice_advanced }}</p>
                     <p>{{ $item->basic }}</p>
                     <p>{{ $item->club }}</p>
+                    <p>{{ $item->advanced }}</p>
                     <p>{{ $item->spicy }}</p>
                     <p>{{ $item->drink }}</p>
                 </div>
