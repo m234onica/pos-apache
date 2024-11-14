@@ -117,6 +117,7 @@
     document.addEventListener("DOMContentLoaded", function() {
         // 全局變量
         let carts = [];
+        let cartKeyCounter = 0; // 用於生成唯一 key 的計數器
 
         // 初始化事件監聽器
         initModalEvents();
@@ -413,6 +414,7 @@
 
             // 構建要加入購物車的項目
             const cartItem = {
+                key: cartKeyCounter++, // 用於唯一識別購物車項目
                 menuId,
                 name,
                 price,
@@ -467,7 +469,7 @@
                 deleteButton.className = "material-symbols-outlined icon";
                 deleteButton.style = "color:red; font-size:36px; cursor:pointer;";
                 deleteButton.innerText = 'delete';
-                deleteButton.addEventListener('click', () => removeCartItem(cartItem.menuId));
+                deleteButton.addEventListener('click', () => removeCartItem(cartItem.key));
                 itemDiv.appendChild(deleteButton);
 
                 modalBody.appendChild(itemDiv);
@@ -511,8 +513,8 @@
         }
 
         // 刪除購物車項目
-        function removeCartItem(menuId) {
-            carts = carts.filter(item => item.menuId !== menuId);
+        function removeCartItem(key) {
+            carts = carts.filter(item => item.key !== key);
             updateCartModalContent();
         }
 
