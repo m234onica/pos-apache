@@ -590,8 +590,34 @@ input[type="number"]::-webkit-inner-spin-button {
 .swal2-popup {
     width: 45em !important;
     height: 20em !important;
+    padding: 2em 0 !important;
     .swal2-title {
-        padding: 1em 2em 0 !important;
+        padding: 0.3em 2em 0 2em !important;
         font-size: 4em !important;
+    }
+    .swal2-confirm {
+        font-size: 2em !important;
+        background-color: #49c6f7;
+        /* 綠色背景 */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+
+        &:hover {
+            background-color: #fdfdfd;
+            border: 1.5px solid #49c6f7;
+            color: #49c6f7;
+            /* 深綠色 */
+        }
+    }
+}
+
+.swal2-icon-error {
+    height: 30em !important;
+    .swal2-icon {
+        margin-bottom: 2em;
     }
 }
