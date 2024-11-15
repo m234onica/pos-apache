@@ -21,7 +21,8 @@ class OrderController extends Controller
                 if (isset($remarkArr)) {
                     $item->basic = implode(', ', $remarkArr->BASIC ?? []);
                     $item->club = implode(', ', $remarkArr->CLUB ?? []);
-                    $item->drink = $remarkArr->DRINK ?? '';
+                    $item->size = $remarkArr->SIZE ?? '';
+                    $item->heat = $remarkArr->HEAT ?? '';
                     $item->spicy = $remarkArr->SPICY ?? '';
                     $item->rice = $remarkArr->RICE ?? '';
                     $item->riceAdvanced = $remarkArr->RICE_ADVANCED ?? '';
@@ -64,7 +65,8 @@ class OrderController extends Controller
                 'carts.*.riceAdvancedOptions' => 'nullable',
                 'carts.*.advancedOptions' => 'nullable|array',
                 'carts.*.spicyOptions' => 'nullable',
-                'carts.*.drinkOptions' => 'nullable|array',
+                'carts.*.sizekOptions' => 'nullable|array',
+                'carts.*.heatkOptions' => 'nullable|array',
                 'carts.*.totalPrice' => 'required|integer|min:1',
             ])->validate();
 
@@ -106,8 +108,12 @@ class OrderController extends Controller
                         $remark['SPICY'] = $item['spicyOptions']['name'];
                     }
 
-                    if (isset($item['drinkOptions'])) {
-                        $remark['DRINK'] = $item['drinkOptions']['name'];
+                    if (isset($item['sizeOptions'])) {
+                        $remark['SIZE'] = $item['sizeOptions']['name'];
+                    }
+
+                    if (isset($item['heatOptions'])) {
+                        $remark['HEAT'] = $item['heatOptions']['name'];
                     }
 
                     $order->items()->create([

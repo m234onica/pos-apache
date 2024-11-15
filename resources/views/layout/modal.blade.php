@@ -82,9 +82,15 @@
                             <!-- 選項會動態填充 -->
                         </div>
                     </div>
-                    <div id="drinkOptions" class=" form-group">
-                        <label class="label" for="drinkOptions">尺寸：</label>
-                        <div class="checkbox-grid" id="drink-options-container">
+                    <div id="sizeOptions" class=" form-group">
+                        <label class="label" for="sizeOptions">尺寸：</label>
+                        <div class="checkbox-grid" id="size-options-container">
+                            <!-- 選項會動態填充 -->
+                        </div>
+                    </div>
+                    <div id="heatOptions" class=" form-group">
+                        <label class="label" for="heatOptions">尺寸：</label>
+                        <div class="checkbox-grid" id="heat-options-container">
                             <!-- 選項會動態填充 -->
                         </div>
                     </div>
@@ -215,7 +221,8 @@
                         price: this.getAttribute("data-price"),
                         type: this.getAttribute("data-menu-type"),
                         quantity: this.getAttribute("data-quantity"),
-                        drinkOptions: JSON.parse(this.getAttribute("data-menu-drink-options") || '[]'),
+                        sizeOptions: JSON.parse(this.getAttribute("data-menu-size-options") || '[]'),
+                        heatOptions: JSON.parse(this.getAttribute("data-menu-heat-options") || '[]'),
                         riceOptions: JSON.parse(this.getAttribute("data-menu-rice-options") || '[]'),
                         riceAdvancedOptions: JSON.parse(this.getAttribute("data-menu-rice-advanced-options") || '[]'),
                         advancedOptions: JSON.parse(this.getAttribute("data-menu-advanced-options") || '[]'),
@@ -238,7 +245,8 @@
             options,
             allOptions,
             spicyOptions,
-            drinkOptions,
+            sizeOptions,
+            heatOptions,
             riceOptions,
             riceAdvancedOptions,
             advancedOptions
@@ -251,7 +259,8 @@
 
             // 將數據設置到對應的 DOM 元素上，這樣在 addCart 中可以正確讀取
             document.getElementById("options-container").setAttribute("data-menu-all-options", JSON.stringify(allOptions));
-            document.getElementById("drink-options-container").setAttribute("data-menu-drink-options", JSON.stringify(drinkOptions));
+            document.getElementById("size-options-container").setAttribute("data-menu-size-options", JSON.stringify(sizeOptions));
+            document.getElementById("heat-options-container").setAttribute("data-menu-heat-options", JSON.stringify(heatOptions));
             document.getElementById("spicy-options-container").setAttribute("data-menu-spicy-options", JSON.stringify(spicyOptions));
             document.getElementById("rice-options-container").setAttribute("data-menu-rice-options", JSON.stringify(riceOptions));
             document.getElementById("rice-advanced-options-container").setAttribute("data-menu-rice-advanced-options", JSON.stringify(riceAdvancedOptions));
@@ -261,23 +270,32 @@
             const selectedOptions = new Set(options.map(opt => opt.id));
 
             if (type === 'DRINK') {
+                document.getElementById("sizeOptions").style.display = "block";
+                document.getElementById("heatOptions").style.display = "block";
+
                 document.getElementById("menuOptions").style.display = "none";
                 document.getElementById("spicyOptions").style.display = "none";
-                document.getElementById("drinkOptions").style.display = "block";
                 document.getElementById("riceOptions").style.display = "none";
                 document.getElementById("riceAdvancedOptions").style.display = "none";
                 document.getElementById("advancedOptions").style.display = "none";
 
                 // 填充飲料選項
-                const drinkOptionArray = Array.isArray(drinkOptions) ? drinkOptions : Object.values(drinkOptions);
-                const drinkOptionsContainer = document.getElementById("drink-options-container");
-                populateOptions(drinkOptionArray, selectedOptions, drinkOptionsContainer, true);
+                const sizeOptionArray = Array.isArray(sizeOptions) ? sizeOptions : Object.values(sizeOptions);
+                const sizeOptionsContainer = document.getElementById("size-options-container");
+                populateOptions(sizeOptionArray, selectedOptions, sizeOptionsContainer, true);
+
+                const heatOptionArray = Array.isArray(heatOptions) ? heatOptions : Object.values(heatOptions);
+                const heatOptionsContainer = document.getElementById("heat-options-container");
+                populateOptions(heatOptionArray, selectedOptions, heatOptionsContainer, true);
+
                 return;
 
             } else {
+                document.getElementById("sizeOptions").style.display = "none";
+                document.getElementById("heatOptions").style.display = "none";
+
                 document.getElementById("menuOptions").style.display = "block";
                 document.getElementById("spicyOptions").style.display = "block";
-                document.getElementById("drinkOptions").style.display = "none";
                 document.getElementById("riceOptions").style.display = "block";
                 document.getElementById("riceAdvancedOptions").style.display = "block";
                 document.getElementById("advancedOptions").style.display = "block";
@@ -366,15 +384,15 @@
             const quantity = parseInt(document.getElementById('quantityInput').value) || 1;
             let optionsNodeList = [];
 
-            // 判斷 #options-container 是否顯示，否則使用 #drink-options-container
+            // 判斷 #options-container 是否顯示，否則使用 #size-options-container
             if (menuOptionsModal.querySelector('#options-container').offsetParent !== null) {
                 // 使用 Array.from 將 NodeList 轉換為 Array，再合併其他選項
                 optionsNodeList = Array.from(menuOptionsModal.querySelectorAll('#options-container input[type="checkbox"]:checked'))
                     .concat(Array.from(menuOptionsModal.querySelectorAll('#rice-options-container input[type="checkbox"]:checked')))
                     .concat(Array.from(menuOptionsModal.querySelectorAll('#advanced-options-container input[type="checkbox"]:checked')));
 
-            } else if (menuOptionsModal.querySelector('#drink-options-container').offsetParent !== null) {
-                optionsNodeList = menuOptionsModal.querySelectorAll('#drink-options-container input[type="checkbox"]:checked');
+            } else if (menuOptionsModal.querySelector('#size-options-container').offsetParent !== null) {
+                optionsNodeList = menuOptionsModal.querySelectorAll('#size-options-container input[type="checkbox"]:checked');
             }
 
             // 確保 optionsNodeList 為陣列，避免單一元素時無法進行 reduce
@@ -458,9 +476,14 @@
                 JSON.parse(document.getElementById("advanced-options-container").getAttribute("data-menu-advanced-options") || '[]') :
                 Object.values(JSON.parse(document.getElementById("advanced-options-container").getAttribute("data-menu-advanced-options") || '[]'));
 
-            const drinkOptionMapArray = Array.isArray(JSON.parse(document.getElementById("drink-options-container").getAttribute("data-menu-drink-options") || '[]')) ?
-                JSON.parse(document.getElementById("drink-options-container").getAttribute("data-menu-drink-options") || '[]') :
-                Object.values(JSON.parse(document.getElementById("drink-options-container").getAttribute("data-menu-drink-options") || '[]'));
+            // type 為 DRINK 時的尺寸選項
+            const sizeOptionMapArray = Array.isArray(JSON.parse(document.getElementById("size-options-container").getAttribute("data-menu-size-options") || '[]')) ?
+                JSON.parse(document.getElementById("size-options-container").getAttribute("data-menu-size-options") || '[]') :
+                Object.values(JSON.parse(document.getElementById("size-options-container").getAttribute("data-menu-size-options") || '[]'));
+
+            const heatOptionMapArray = Array.isArray(JSON.parse(document.getElementById("heat-options-container").getAttribute("data-menu-heat-options") || '[]')) ?
+                JSON.parse(document.getElementById("heat-options-container").getAttribute("data-menu-heat-options") || '[]') :
+                Object.values(JSON.parse(document.getElementById("heat-options-container").getAttribute("data-menu-heat-options") || '[]'));
 
             const spicyOptionMapArray = Array.isArray(JSON.parse(document.getElementById("spicy-options-container").getAttribute("data-menu-spicy-options") || '[]')) ?
                 JSON.parse(document.getElementById("spicy-options-container").getAttribute("data-menu-spicy-options") || '[]') :
@@ -471,7 +494,8 @@
             const riceOptionMapObject = mapOptionsById(riceOptionMapArray);
             const riceAdvancedOptionMapObject = mapOptionsById(riceAdvancedOptionMapArray);
             const advancedOptionMapObject = mapOptionsById(advancedOptionMapArray);
-            const drinkOptionMapObject = mapOptionsById(drinkOptionMapArray);
+            const sizeOptionMapObject = mapOptionsById(sizeOptionMapArray);
+            const heatOptionMapObject = mapOptionsById(heatOptionMapArray);
             const spicyOptionMapObject = mapOptionsById(spicyOptionMapArray);
 
             let selectedOptions = [];
@@ -479,7 +503,8 @@
             let selectedRiceOption = null;
             let selectedRiceAdvancedOption = null;
             let selectedSpicyOption = null;
-            let selectedDrinkOption = null;
+            let selectedsizeOption = null;
+            let selectedHeatOption = null;
 
             if (type !== 'DRINK') {
                 // 獲取配飯選項
@@ -513,11 +538,19 @@
                 } : null;
             } else {
                 // 獲取飲品尺寸選項
-                const selectedDrinkOptionElement = document.querySelector('#drink-options-container input[type="checkbox"]:checked');
-                selectedDrinkOption = selectedDrinkOptionElement ? {
-                    id: selectedDrinkOptionElement.value,
-                    name: drinkOptionMapObject[selectedDrinkOptionElement.value]?.name || "未知",
-                    price: drinkOptionMapObject[selectedDrinkOptionElement.value]?.price || 0
+                const selectedSizeOptionElement = document.querySelector('#size-options-container input[type="checkbox"]:checked');
+                selectedsizeOption = selectedSizeOptionElement ? {
+                    id: selectedSizeOptionElement.value,
+                    name: sizeOptionMapObject[selectedSizeOptionElement.value]?.name || "未知",
+                    price: sizeOptionMapObject[selectedSizeOptionElement.value]?.price || 0
+                } : null;
+
+                // 獲取飲品溫度選項
+                const selectedHeatOptionElement = document.querySelector('#heat-options-container input[type="checkbox"]:checked');
+                selectedHeatOption = selectedHeatOptionElement ? {
+                    id: selectedHeatOptionElement.value,
+                    name: heatOptionMapObject[selectedHeatOptionElement.value]?.name || "未知",
+                    price: heatOptionMapObject[selectedHeatOptionElement.value]?.price || 0
                 } : null;
             }
 
@@ -534,7 +567,8 @@
                 riceAdvancedOptions: selectedRiceAdvancedOption,
                 advancedOptions: selectedAdvancedOption,
                 spicyOptions: selectedSpicyOption,
-                drinkOptions: selectedDrinkOption
+                sizeOptions: selectedsizeOption,
+                heatOptions: selectedHeatOption
             };
 
             // 將項目添加到購物車陣列中
@@ -543,7 +577,7 @@
             // 顯示通知或更新購物車視圖
             Swal.fire({
                 title: '已加入購物車！',
-                confirmButtonText:'<p style="font-size: 28px;">確認</p>',
+                confirmButtonText: '<p style="font-size: 28px;">確認</p>',
             });
         }
 
@@ -569,7 +603,7 @@
 
                 // 計算主商品及其選項的總價格
                 let totalPrice = cartItem.price + (cartItem.options || []).reduce((acc, option) => acc + option.price, 0);
-                totalPrice += (cartItem.spicyOptions?.price || 0) + (cartItem.drinkOptions?.price || 0);
+                totalPrice += (cartItem.spicyOptions?.price || 0) + (cartItem.sizeOptions?.price || 0);
                 totalPrice += (cartItem.riceOptions?.price || 0) + (cartItem.riceAdvancedOptions?.price || 0);
                 totalPrice += (cartItem.advancedOptions || []).reduce((acc, option) => acc + option.price, 0);
 
@@ -644,11 +678,19 @@
                 }
 
                 // 顯示尺寸選項
-                if (cartItem.drinkOptions) {
-                    const drinkOptionItem = document.createElement('p');
-                    drinkOptionItem.classList.add('options-list');
-                    drinkOptionItem.innerText = `${cartItem.drinkOptions.name} (+$${cartItem.drinkOptions.price})`;
-                    itemDiv.appendChild(drinkOptionItem);
+                if (cartItem.sizeOptions) {
+                    const sizeOptionItem = document.createElement('p');
+                    sizeOptionItem.classList.add('options-list');
+                    sizeOptionItem.innerText = `${cartItem.sizeOptions.name} (+$${cartItem.sizeOptions.price})`;
+                    itemDiv.appendChild(sizeOptionItem);
+                }
+
+                // 顯示溫度選項
+                if (cartItem.heatOptions) {
+                    const heatOptionItem = document.createElement('p');
+                    heatOptionItem.classList.add('options-list');
+                    heatOptionItem.innerText = `${cartItem.heatOptions.name} (+$${cartItem.heatOptions.price})`;
+                    itemDiv.appendChild(heatOptionItem);
                 }
 
                 // 計算總金額
@@ -682,7 +724,7 @@
                     if (response.ok) {
                         Swal.fire({
                             title: '訂單成立!',
-                            confirmButtonText:'<p style="font-size: 28px;">確認</p>',
+                            confirmButtonText: '<p style="font-size: 28px;">確認</p>',
                         }).then(() => {
                             $('#cartModal').modal('hide');
                             window.location.href = '/orders';
@@ -690,7 +732,7 @@
                     } else if (response.status === 422) {
                         Swal.fire({
                             title: '請確認購物車是否有誤!',
-                            confirmButtonText:'<p style="font-size: 28px;">確認</p>',
+                            confirmButtonText: '<p style="font-size: 28px;">確認</p>',
                         });
                     } else {
                         throw new Error('訂單成立失敗');
@@ -699,7 +741,7 @@
                 .catch(error => {
                     Swal.fire({
                         icon: 'error',
-                        confirmButtonText:'<p style="font-size: 28px;">確認</p>',
+                        confirmButtonText: '<p style="font-size: 28px;">確認</p>',
                         title: error.message || '訂單成立失敗，請重試!',
                     });
                 });

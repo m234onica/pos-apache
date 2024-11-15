@@ -33,7 +33,8 @@
                 <p>{{ $item->club }}</p>
                 <p>{{ $item->advanced }}</p>
                 <p>{{ $item->spicy }}</p>
-                <p>{{ $item->drink }}</p>
+                <p>{{ $item->size }}</p>
+                <p>{{ $item->heat }}</p>
             </div>
             <span>${{ $item->total_price }}</span>
         </div>
@@ -65,7 +66,8 @@
                 <p>{{ $item->club }}</p>
                 <p>{{ $item->advanced }}</p>
                 <p>{{ $item->spicy }}</p>
-                <p>{{ $item->drink }}</p>
+                <p>{{ $item->size }}</p>
+                <p>{{ $item->heat }}</p>
             </div>
             <span>${{ $item->total_price }}</span>
         </div>
@@ -103,7 +105,8 @@
                     <p>{{ $item->club }}</p>
                     <p>{{ $item->advanced }}</p>
                     <p>{{ $item->spicy }}</p>
-                    <p>{{ $item->drink }}</p>
+                    <p>{{ $item->size }}</p>
+                    <p>{{ $item->heat }}</p>
                 </div>
                 <span>${{ $item->total_price }}</span>
             </div>
@@ -142,7 +145,8 @@
                     <p>{{ $item->club }}</p>
                     <p>{{ $item->advanced }}</p>
                     <p>{{ $item->spicy }}</p>
-                    <p>{{ $item->drink }}</p>
+                    <p>{{ $item->size }}</p>
+                    <p>{{ $item->heat }}</p>
                 </div>
                 <span>${{ $item->total_price }}</span>
             </div>
