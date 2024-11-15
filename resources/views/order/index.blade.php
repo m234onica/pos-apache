@@ -31,6 +31,7 @@
                 <p>{{ $item->rice_advanced }}</p>
                 <p>{{ $item->basic }}</p>
                 <p>{{ $item->club }}</p>
+                <p>{{ $item->add }}</p>
                 <p>{{ $item->advanced }}</p>
                 <p>{{ $item->spicy }}</p>
                 <p>{{ $item->size }}</p>
@@ -64,6 +65,7 @@
                 <p>{{ $item->rice_advanced }}</p>
                 <p>{{ $item->basic }}</p>
                 <p>{{ $item->club }}</p>
+                <p>{{ $item->add }}</p>
                 <p>{{ $item->advanced }}</p>
                 <p>{{ $item->spicy }}</p>
                 <p>{{ $item->size }}</p>
@@ -104,6 +106,7 @@
                     <p>{{ $item->basic }}</p>
                     <p>{{ $item->club }}</p>
                     <p>{{ $item->advanced }}</p>
+                    <p>{{ $item->add }}</p>
                     <p>{{ $item->spicy }}</p>
                     <p>{{ $item->size }}</p>
                     <p>{{ $item->heat }}</p>
@@ -144,6 +147,7 @@
                     <p>{{ $item->basic }}</p>
                     <p>{{ $item->club }}</p>
                     <p>{{ $item->advanced }}</p>
+                    <p>{{ $item->add }}</p>
                     <p>{{ $item->spicy }}</p>
                     <p>{{ $item->size }}</p>
                     <p>{{ $item->heat }}</p>
