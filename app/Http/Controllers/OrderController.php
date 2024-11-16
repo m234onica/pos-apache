@@ -71,6 +71,7 @@ class OrderController extends Controller
                     'carts.*.riceOptions' => 'nullable',
                     'carts.*.riceAdvancedOptions' => 'nullable',
                     'carts.*.advancedOptions' => 'nullable|array',
+                    'carts.*.addOptions' => 'nullable|array',
                     'carts.*.spicyOptions' => 'nullable',
                     'carts.*.sizekOptions' => 'nullable|array',
                     'carts.*.heatkOptions' => 'nullable|array',
@@ -89,7 +90,7 @@ class OrderController extends Controller
                     $remark = [];
                     $totalPrice += $item['totalPrice'] * $item['quantity'];
 
-                    foreach (['options', 'advancedOptions'] as $optionType) {
+                    foreach (['options', 'advancedOptions', 'addOptions'] as $optionType) {
                         if (!$item[$optionType]) {
                             continue;
                         }

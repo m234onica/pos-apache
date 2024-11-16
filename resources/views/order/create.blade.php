@@ -21,7 +21,8 @@
         $spicyOptions = collect([]);
         $sizeOptions = collect([]);
         $heatOptions = collect([]);
-        $canAddMenuOptions = collect([]);
+        $basicOptions = collect([]);
+        $addOptions = collect([]);
         $riceOptions = collect([]);
         $advancedOptions = collect([]);
         $riceAdvancedOptions = collect([]);
@@ -36,21 +37,22 @@
                 return $option->type === 'HEAT';
             });
 
-        } elseif (in_array($menu->type, ['BASIC', 'CLUB'])) {
-            $canAddMenuOptions = $menuOptions->filter(function ($option) {
-                return in_array($option->type, ['BASIC', 'CLUB']);
-            })->map(function ($option) use ($menu) {
-                if ($menu->type === 'BASIC') {
-                    // 如果 $menu->type 是 'BASIC' 且 option 的 type 是 'BASIC'，則 price = 0
-                    // 如果 $menu->type 是 'BASIC' 且 option 的 type 是 'CLUB'，則 price = 5
-                    $option->price = ($option->type === 'BASIC') ? 0 : $option->price;
-                } elseif ($menu->type === 'CLUB') {
-                    // 如果 $menu->type 是 'CLUB'，無論 option 的 type 是 'BASIC' 或 'CLUB'，price = 0
-                    if ($option->type !== 'RICE' && $option->type !== 'ADVANCED') {
-                        $option->price = 0;
-                    }
-                }
-                return $option;
+        } else {
+            if ($menu->type == 'BASIC') {
+                $basicOptions = $menuOptions->filter(function ($option) {
+                    return $option->type === 'BASIC';
+                });
+            } elseif ($menu->type == 'CLUB') {
+                $basicOptions = $menuOptions->filter(function ($option) {
+                    return in_array($option->type, ['BASIC', 'CLUB']);
+                })->map(function ($option) use ($menu) {
+                    $option->price = 0;
+                    return $option;
+                });
+            }
+            // 只保留類型為 ADD 的選項
+            $addOptions = $menuOptions->filter(function ($option) {
+                return $option->type === 'ADD';
             });
             // 只保留類型為 RICE 的選項
             $riceOptions = $menuOptions->filter(function ($option) {
@@ -83,7 +85,8 @@
             data-quantity="1"
             data-menu-type="{{ $menu->type }}"
             data-menu-default-options="{{ $menu->options }}"
-            data-menu-all-options="{{ $canAddMenuOptions }}"
+            data-menu-all-options="{{ $basicOptions }}"
+            data-menu-add-options="{{ $addOptions }}"
             data-menu-rice-options="{{ $riceOptions }}"
             data-menu-advanced-options="{{ $advancedOptions }}"
             data-menu-rice-advanced-options="{{ $riceAdvancedOptions }}"
